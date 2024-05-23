@@ -16,3 +16,9 @@ spring:
 app:
   cors:
     allowedOrigins: http://localhost:4176,http://localhost:4200,http://localhost:4201,http://localhost:${SERVER_PORT:8088},
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
