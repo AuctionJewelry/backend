@@ -1,6 +1,6 @@
 package com.se.jewelryauction.models;
 
-import com.se.jewelryauction.models.Enum.ValuatingStatus;
+import com.se.jewelryauction.models.enums.ValuatingStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.*;

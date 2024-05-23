@@ -1,9 +1,16 @@
 package com.se.jewelryauction.models;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
+@Table(name = "collections")
+@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class CollectionEntity extends BaseEntiy{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
