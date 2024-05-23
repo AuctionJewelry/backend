@@ -1,8 +1,8 @@
 package com.se.jewelryauction.models;
 
-import com.se.jewelryauction.models.Enum.JewelryCondition;
-import com.se.jewelryauction.models.Enum.JewelryStatus;
-import com.se.jewelryauction.models.Enum.Sex;
+import com.se.jewelryauction.models.enums.JewelryCondition;
+import com.se.jewelryauction.models.enums.JewelryStatus;
+import com.se.jewelryauction.models.enums.Sex;
 import jakarta.persistence.*;
 import lombok.*;
 
