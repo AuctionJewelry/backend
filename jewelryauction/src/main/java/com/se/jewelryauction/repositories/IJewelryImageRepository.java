@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface IJewelryRepository extends JpaRepository<JewelryEntity, Long> {
+public interface IJewelryImageRepository extends JpaRepository<JewelryEntity, Long> {
 }
