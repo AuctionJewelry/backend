@@ -17,7 +17,7 @@ import static com.se.jewelryauction.mappers.MaterialMapper.INSTANCE;
 public class MaterialController {
     private final IMaterialService materialService;
     @PostMapping("")
-    public CoreApiResponse<MaterialEntity> createBirdType(
+    public CoreApiResponse<MaterialEntity> createMaterial(
             @Valid @RequestBody MaterialRequest materialRequest
     ){
         MaterialEntity birdTypeResponse = materialService.createMaterial(INSTANCE.toModel(materialRequest));
@@ -25,19 +25,19 @@ public class MaterialController {
     }
 
     @GetMapping("")
-    public CoreApiResponse<List<MaterialEntity>> getAllBirdTypes(){
+    public CoreApiResponse<List<MaterialEntity>> getAllMaterials(){
         List<MaterialEntity> material = materialService.getAllMaterials();
         return CoreApiResponse.success(material);
     }
 
     @GetMapping("/{id}")
-    public CoreApiResponse<MaterialEntity> getBirdTypeById(@Valid @PathVariable Long id){
+    public CoreApiResponse<MaterialEntity> getMaterialById(@Valid @PathVariable Long id){
         MaterialEntity material = materialService.getMaterialById(id);
         return CoreApiResponse.success(material);
     }
 
     @PutMapping("/{id}")
-    public CoreApiResponse<MaterialEntity> updateCategory(
+    public CoreApiResponse<MaterialEntity> updateMaterial(
             @PathVariable Long id,
             @Valid @RequestBody MaterialRequest materialRequest
     ){
@@ -46,7 +46,7 @@ public class MaterialController {
     }
 
     @DeleteMapping("/{id}")
-    public CoreApiResponse<?> deleteCategory(
+    public CoreApiResponse<?> deleteMaterial(
             @PathVariable Long id
     ){
         materialService.deleteMaterial(id);

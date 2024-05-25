@@ -1,5 +1,6 @@
 package com.se.jewelryauction.services;
 
+import com.se.jewelryauction.models.JewelryEntity;
 import com.se.jewelryauction.models.MaterialEntity;
 
 import java.util.List;
