@@ -1,8 +1,15 @@
 package com.se.jewelryauction.requests;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.*;
 
+@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class MaterialRequest {
-    @NotEmpty(message = "Material name cannot be empty")
+    @NotBlank(message = "Material name cannot be empty")
     private String name;
 }
