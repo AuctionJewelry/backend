@@ -29,7 +29,7 @@ public class JewelryEntity {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
-    private CategoryEntity categoryId;
+    private CategoryEntity category;
 
     private float weight;
 
