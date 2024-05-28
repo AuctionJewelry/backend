@@ -72,7 +72,7 @@ public class UserService implements IUserService {
         user.setDate_of_birth(request.getDob()  );
         user.setEmail(request.getEmail());
         user.setRole_id(roleRepository.findById(4L)
-                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This material is not existed!")));
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This role is not existed!")));
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail_verified(false);
 

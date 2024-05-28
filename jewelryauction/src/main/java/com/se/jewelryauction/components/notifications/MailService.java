@@ -10,9 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 import java.util.Properties;
-
+@Component
 public class MailService {
     private static final String CONTENT_TYPE_TEXT_HTML = "text/html;charset=\"utf-8\"";
 

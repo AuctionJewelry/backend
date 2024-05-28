@@ -29,8 +29,8 @@ app:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${EMAIL:chinhhnse173672@fpt.edu.vn}
-    password: ${EMAIL_PASSWORD:nyht zdzu tjtq yjhn}
+    username: ${EMAIL:phuctthse173231@fpt.edu.vn}
+    password: ${EMAIL_PASSWORD:meaz pthb fsee hapg}
     properties:
       mail:
         smtp:

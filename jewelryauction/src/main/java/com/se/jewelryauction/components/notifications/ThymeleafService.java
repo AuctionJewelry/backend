@@ -3,13 +3,14 @@ package com.se.jewelryauction.components.notifications;
 import com.se.jewelryauction.components.constants.Template;
 import com.se.jewelryauction.models.UserEntity;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-
+@Service
 public class ThymeleafService {
     private static final String MAIL_TEMPLATE_BASE_NAME = "mail/MailMessages";
     private static final String MAIL_TEMPLATE_PREFIX = "/templates/";
