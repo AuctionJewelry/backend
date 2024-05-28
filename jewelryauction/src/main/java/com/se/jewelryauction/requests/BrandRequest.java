@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryRequest {
-    @NotBlank(message = "Name can not be empty")
+public class BrandRequest {
+    @NotBlank(message = "Brand name cannot be empty")
     private String name;
 }
