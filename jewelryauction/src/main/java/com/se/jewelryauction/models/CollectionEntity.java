@@ -18,5 +18,7 @@ public class CollectionEntity extends BaseEntiy{
 
     private String name;
 
-
+    @ManyToOne
+    @JoinColumn(name = "brand_id")
+    private BrandEntity brand;
 }

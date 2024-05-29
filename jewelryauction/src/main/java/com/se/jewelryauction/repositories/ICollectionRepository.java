@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ICollectionRepository extends JpaRepository<CollectionEntity, Long> {
+    CollectionEntity findByName (String name);
 }
