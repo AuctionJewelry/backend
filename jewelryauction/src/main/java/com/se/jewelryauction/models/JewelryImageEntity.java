@@ -1,5 +1,6 @@
 package com.se.jewelryauction.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,7 @@ public class JewelryImageEntity {
     private Long id;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "jewelry_id")
     private JewelryEntity jewelry;
 
