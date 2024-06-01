@@ -6,6 +6,8 @@ import com.se.jewelryauction.models.enums.Sex;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "jewelrys")
 @Data
@@ -19,12 +21,13 @@ public class JewelryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "seller_id")
     private UserEntity sellerId;
 
     private String name;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
     @ManyToOne
@@ -43,11 +46,24 @@ public class JewelryEntity {
     @JoinColumn(name = "brand_id")
     private BrandEntity brand;
 
+    @Enumerated(EnumType.STRING)
     private JewelryCondition jewelryCondition;
+
     private float staringPrice;
+
     private JewelryStatus status;
 
     @ManyToOne
     @JoinColumn(name = "collection_id")
     private CollectionEntity collection;
+
+    @OneToMany(mappedBy = "jewelry", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<JewelryImageEntity> jewelryImages;
+
+    @OneToMany(mappedBy = "jewelry", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<JewelryMaterialEntity> jewelryMaterials;
+
+    @Column(name = "thumbnail", length = 300)
+    private String thumbnail;
+
 }

@@ -2,10 +2,8 @@ package com.se.jewelryauction.controllers;
 
 import com.se.jewelryauction.components.apis.CoreApiResponse;
 import com.se.jewelryauction.models.CategoryEntity;
-import com.se.jewelryauction.models.MaterialEntity;
 import com.se.jewelryauction.requests.CategoryRequest;
-import com.se.jewelryauction.requests.MaterialRequest;
-import com.se.jewelryauction.services.ICategoryServices;
+import com.se.jewelryauction.services.ICategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +16,7 @@ import static com.se.jewelryauction.mappers.CategoryMapper.INSTANCE;
 @RequestMapping("${app.api.version.v1}/category")
 @RequiredArgsConstructor
 public class CategoryController {
-    private final ICategoryServices categoryServices;
+    private final ICategoryService categoryServices;
 
     @PostMapping("")
     public CoreApiResponse<CategoryEntity> createCategory(
