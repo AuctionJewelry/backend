@@ -168,6 +168,8 @@ public class JewelryService implements IJewelryService {
     }
 
 
+
+
     @Override
     public void deleteJewelry(long id) {
         JewelryEntity existingJewelry = getJewelryById(id);

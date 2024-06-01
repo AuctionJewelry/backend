@@ -1,7 +1,6 @@
 package com.se.jewelryauction.controllers;
 
 import com.se.jewelryauction.components.apis.CoreApiResponse;
-import com.se.jewelryauction.mappers.CategoryMapper;
 import com.se.jewelryauction.models.JewelryEntity;
 import com.se.jewelryauction.requests.JewelryRequest;
 import com.se.jewelryauction.services.IJewelryService;
