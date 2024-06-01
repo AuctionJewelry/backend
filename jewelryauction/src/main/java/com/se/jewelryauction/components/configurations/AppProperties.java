@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Getter
 @Setter
-@Component
-@ConfigurationProperties(prefix = "app")public class AppProperties {
+@ConfigurationProperties(prefix = "app")
+public class AppProperties {
     private final Auth auth = new Auth();
 
     @Getter
