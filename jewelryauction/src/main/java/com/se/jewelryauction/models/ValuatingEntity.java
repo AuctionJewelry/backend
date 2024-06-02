@@ -26,16 +26,17 @@ public class ValuatingEntity {
     @JoinColumn(name = "jewelry_id")
     private JewelryEntity jewelry;
 
-    private float desiredPrice;
-    private String paymentMethod;
     private float valuation_value;
     private String notes;
 
-    @ManyToOne
-    @JoinColumn(name = "delivery_id")
-    private DeliveryMethodEntity deliveryMethod;
-
     private ValuatingStatus status;
+
+    private boolean isOnline;
+
+    private float desiredPrice;
+    private String paymentMethod;
+    private float valuatingFee;
+    private String valuatingMethod;
 
 
 }
