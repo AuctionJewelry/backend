@@ -25,4 +25,6 @@ public class JewelryMaterialEntity {
     @ManyToOne
     @JoinColumn(name = "material_id")
     private MaterialEntity material;
+
+    private Float weight;
 }
