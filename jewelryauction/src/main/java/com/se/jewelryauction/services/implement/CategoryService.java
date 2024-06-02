@@ -3,7 +3,7 @@ package com.se.jewelryauction.services.implement;
 import com.se.jewelryauction.components.exceptions.AppException;
 import com.se.jewelryauction.models.CategoryEntity;
 import com.se.jewelryauction.repositories.ICategoryRepository;
-import com.se.jewelryauction.services.ICategoryServices;
+import com.se.jewelryauction.services.ICategoryService;
 import com.se.jewelryauction.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryService implements ICategoryServices {
+public class CategoryService implements ICategoryService {
     private final ICategoryRepository categoryRepository;
 
     @Override
