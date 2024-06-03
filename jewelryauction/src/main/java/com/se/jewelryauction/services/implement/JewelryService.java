@@ -8,6 +8,7 @@ import com.se.jewelryauction.mappers.JewelryMapper;
 import com.se.jewelryauction.models.*;
 import com.se.jewelryauction.models.enums.JewelryStatus;
 import com.se.jewelryauction.repositories.*;
+import com.se.jewelryauction.requests.JewelryMaterialRequest;
 import com.se.jewelryauction.requests.JewelryRequest;
 import com.se.jewelryauction.services.IJewelryService;
 import com.se.jewelryauction.utils.StringUtils;
@@ -89,7 +90,10 @@ public class JewelryService implements IJewelryService {
         for (JewelryMaterialEntity material : jewelryMaterialList) {
             JewelryMaterialEntity jewelryMaterial = new JewelryMaterialEntity();
             jewelryMaterial.setJewelry(jewelry);
-            jewelryMaterial.setMaterial(material.getMaterial());
+            jewelryMaterial.setWeight(material.getWeight());
+            MaterialEntity materialEntity = materialRepository.findById(material.getMaterial().getId())
+                    .orElseThrow(() -> new DataNotFoundException("Category", "id", material.getMaterial().getId()));
+            jewelryMaterial.setMaterial(materialEntity);
             newJewelryMaterialList.add(jewelryMaterial);
         }
         jewelry.setJewelryMaterials(newJewelryMaterialList);
@@ -155,7 +159,43 @@ public class JewelryService implements IJewelryService {
 
             existingJewelry.setCollection(existingCollection);
         }
+        if (jewelry.getMaterials() != null) {
+            boolean materialsChanged = false;
 
+            List<JewelryMaterialRequest> jewelryMaterialRequests = jewelry.getMaterials();
+            List<JewelryMaterialEntity> existingJewelryMaterialList = existingJewelry.getJewelryMaterials();
+
+            if (jewelryMaterialRequests.size() != existingJewelryMaterialList.size()) {
+                materialsChanged = true;
+            } else {
+                for (int i = 0; i < jewelryMaterialRequests.size(); i++) {
+                    JewelryMaterialRequest newMaterialRequest = jewelryMaterialRequests.get(i);
+                    JewelryMaterialEntity existingMaterial = existingJewelryMaterialList.get(i);
+
+                    if (!newMaterialRequest.getIdMaterial().equals(existingMaterial.getMaterial().getId()) ||
+                            !newMaterialRequest.getWeight().equals(existingMaterial.getWeight())) {
+                        materialsChanged = true;
+                        break;
+                    }
+                }
+            }
+
+            if (materialsChanged) {
+                List<JewelryMaterialEntity> newJewelryMaterialList = new ArrayList<>();
+                for (JewelryMaterialRequest materialRequest : jewelryMaterialRequests) {
+                    JewelryMaterialEntity jewelryMaterial = new JewelryMaterialEntity();
+                    jewelryMaterial.setJewelry(existingJewelry);
+                    jewelryMaterial.setWeight(materialRequest.getWeight());
+
+                    MaterialEntity materialEntity = materialRepository.findById(materialRequest.getIdMaterial())
+                            .orElseThrow(() -> new DataNotFoundException("Category", "id", materialRequest.getIdMaterial()));
+                    jewelryMaterial.setMaterial(materialEntity);
+
+                    newJewelryMaterialList.add(jewelryMaterial);
+                }
+                existingJewelry.setJewelryMaterials(newJewelryMaterialList);
+            }
+        }
 
         return  jewelryRepository.save(existingJewelry);
     }
