@@ -1,5 +1,7 @@
 package com.se.jewelryauction.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,5 +22,6 @@ public class CollectionEntity extends BaseEntiy{
 
     @ManyToOne
     @JoinColumn(name = "brand_id")
+    @JsonBackReference
     private BrandEntity brand;
 }

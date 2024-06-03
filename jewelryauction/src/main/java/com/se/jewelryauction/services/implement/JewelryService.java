@@ -66,7 +66,7 @@ public class JewelryService implements IJewelryService {
         jewelry.setBrand(existingBrand);
         jewelry.setCollection(existingCollection);
         jewelry.setSellerId(user);
-        jewelry.setStatus(JewelryStatus.Pending);
+        jewelry.setStatus(JewelryStatus.PENDING);
 
         if (imageFile != null && !imageFile.isEmpty()) {
             jewelry.setThumbnail(UploadImagesUtils.storeFile(imageFile, ImageContants.JEWELRY_IMAGE_PATH));
