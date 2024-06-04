@@ -40,6 +40,7 @@ public class JewelryEntity {
 
     private String color;
 
+    @Enumerated(EnumType.STRING)
     private Sex sex;
 
     @ManyToOne
@@ -51,6 +52,7 @@ public class JewelryEntity {
 
     private float staringPrice;
 
+    @Enumerated(EnumType.STRING)
     private JewelryStatus status;
 
     @ManyToOne
