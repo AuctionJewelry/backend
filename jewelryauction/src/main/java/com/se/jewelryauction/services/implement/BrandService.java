@@ -29,7 +29,7 @@ public class BrandService implements IBrandService {
     @Override
     public BrandEntity getBrandById(long id) {
         return brandRepository.findById(id)
-                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This material is not existed!"));
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This brand is not existed!"));
     }
 
     @Override

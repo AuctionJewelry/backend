@@ -67,7 +67,7 @@ public class JewelryService implements IJewelryService {
         jewelry.setBrand(existingBrand);
         jewelry.setCollection(existingCollection);
         jewelry.setSellerId(user);
-        jewelry.setStatus(JewelryStatus.Pending);
+        jewelry.setStatus(JewelryStatus.PENDING);
 
         if (imageFile != null && !imageFile.isEmpty()) {
             jewelry.setThumbnail(UploadImagesUtils.storeFile(imageFile, ImageContants.JEWELRY_IMAGE_PATH));
@@ -99,7 +99,6 @@ public class JewelryService implements IJewelryService {
         jewelry.setJewelryMaterials(newJewelryMaterialList);
         JewelryEntity savedJewelry = jewelryRepository.save(jewelry);
 
-        // Load full material details for the response
         savedJewelry.getJewelryMaterials().forEach(jm -> {
             MaterialEntity fullMaterial = materialRepository.findById(jm.getMaterial().getId()).orElse(null);
             jm.setMaterial(fullMaterial);

@@ -28,7 +28,7 @@ public class CategoryService implements ICategoryService {
     @Override
     public CategoryEntity getCategoryById(long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This material is not existed!"));
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This categod is not existed!"));
     }
 
     @Override
