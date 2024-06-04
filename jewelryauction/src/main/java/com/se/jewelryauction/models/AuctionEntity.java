@@ -24,9 +24,15 @@ public class AuctionEntity {
     private JewelryEntity jewelry;
 
     private Date startTime;
+
     private Date endTime;
+
     private float step;
+
     private int totalBids;
+
     private float currentPrice;
+
+    @Enumerated(EnumType.STRING)
     private AuctionStatus status;
 }

@@ -6,6 +6,7 @@ import com.se.jewelryauction.models.enums.JewelryStatus;
 import com.se.jewelryauction.models.enums.ValuatingStatus;
 import com.se.jewelryauction.repositories.*;
 import com.se.jewelryauction.requests.MaterialsRequest;
+
 import com.se.jewelryauction.services.IValuatingServcie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ public class ValuatingService implements IValuatingServcie {
 
     @Override
     public ValuatingEntity createValuating(ValuatingEntity valuating, MaterialsRequest map) {
+
         JewelryEntity jewelry = jewelryRepository.findById(valuating.getJewelry().getId())
                 .orElseThrow(()
                         -> new AppException(HttpStatus.BAD_REQUEST, "Jewelry doesn't exist!"));
@@ -44,6 +46,7 @@ public class ValuatingService implements IValuatingServcie {
             valuating.setStatus(ValuatingStatus.VALUATED);
             valuating.setValuatingFee(500000);
             valuating.setStaff(null);
+
         }
         else{
             UserEntity staff = userRepository.findById(valuating.getStaff().getId())
@@ -56,6 +59,7 @@ public class ValuatingService implements IValuatingServcie {
             valuating.setStatus(ValuatingStatus.REQUEST);
         }
         return  this.saveValuatingAndUpdateJewelry(valuating);
+
     }
 
     @Override
@@ -98,6 +102,7 @@ public class ValuatingService implements IValuatingServcie {
             existingValuating.setValuatingFee(valuating.getValuatingFee());
         }
         return this.saveValuatingAndUpdateJewelry(existingValuating);
+
     }
 
     @Override
@@ -133,6 +138,7 @@ public class ValuatingService implements IValuatingServcie {
         }
         return jewelryRepository.save(jewelry);
     }
+
 
 
 }

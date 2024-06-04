@@ -30,8 +30,6 @@ public class JewelryRequest {
 
     private String collection;
 
-    private List<Long> materials;
-
-
+    private List<JewelryMaterialRequest> materials;
 
 }
