@@ -4,6 +4,7 @@ import com.se.jewelryauction.components.apis.CoreApiResponse;
 import com.se.jewelryauction.models.ValuatingEntity;
 import com.se.jewelryauction.requests.CreatingValuatingRequest;
 import com.se.jewelryauction.requests.MaterialsRequest;
+import com.se.jewelryauction.requests.UpdateValuatingRequest;
 import com.se.jewelryauction.requests.ValuatingRequest;
 import com.se.jewelryauction.services.IValuatingServcie;
 import jakarta.validation.Valid;
@@ -45,7 +46,7 @@ public class ValuatingController {
     @PutMapping("/{id}")
     public CoreApiResponse<ValuatingEntity> updateValuating(
             @PathVariable Long id,
-            @Valid @RequestBody ValuatingRequest request
+            @Valid @RequestBody UpdateValuatingRequest request
     ){
         ValuatingEntity updateBrand = valuatingService.updateValuating(id, INSTANCE.toModel(request));
         return CoreApiResponse.success(updateBrand, "Update valuating successfully");

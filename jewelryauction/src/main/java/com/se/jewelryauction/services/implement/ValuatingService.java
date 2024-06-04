@@ -51,6 +51,8 @@ public class ValuatingService implements IValuatingServcie {
                             -> new AppException(HttpStatus.BAD_REQUEST, "User doesn't exist"));
             //Sending email to confirm about request check jewelry
             valuating.setJewelry(jewelry);
+            valuating.setValuatingFee(500000);
+            valuating.setStaff(staff);
             valuating.setStatus(ValuatingStatus.REQUEST);
         }
         return  this.saveValuatingAndUpdateJewelry(valuating);
@@ -72,27 +74,29 @@ public class ValuatingService implements IValuatingServcie {
     @Override
     public ValuatingEntity updateValuating(long valuatingId, ValuatingEntity valuating) {
         ValuatingEntity existingValuating = this.getValuatingById(valuatingId);
+        if(!existingValuating.isOnline()){
+            UserEntity user;
+            if (valuating.getStaff() != null){
+                user = userRepository.findById(valuating.getStaff().getId())
+                        .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "User doesn't exist"));
+                existingValuating.setStaff(user);
+            }
 
-        UserEntity user;
-        if (valuating.getStaff() != null){
-            user = userRepository.findById(valuating.getStaff().getId())
-                    .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "User doesn't exist"));
-            existingValuating.setStaff(user);
+            JewelryEntity jewelry = jewelryRepository.findById(valuating.getJewelry().getId())
+                    .orElseThrow(()
+                            -> new AppException(HttpStatus.BAD_REQUEST, "Jewelry doesn't exist!"));
+
+            if (existingValuating.getJewelry().getId() != jewelry.getId())
+                throw new AppException(HttpStatus.BAD_REQUEST, "Can not change Jewelry!");
+
+            existingValuating.setValuation_value(valuating.getValuation_value());
+            existingValuating.setStatus(valuating.getStatus());
+            existingValuating.setNotes(valuating.getNotes());
+            existingValuating.setDesiredPrice(valuating.getDesiredPrice());
+            existingValuating.setPaymentMethod(valuating.getPaymentMethod());
+            existingValuating.setValuatingMethod(valuating.getValuatingMethod());
+            existingValuating.setValuatingFee(valuating.getValuatingFee());
         }
-
-        JewelryEntity jewelry = jewelryRepository.findById(valuating.getJewelry().getId())
-                .orElseThrow(()
-                        -> new AppException(HttpStatus.BAD_REQUEST, "Jewelry doesn't exist!"));
-
-        if (existingValuating.getJewelry().getId() != jewelry.getId())
-            throw new AppException(HttpStatus.BAD_REQUEST, "Can not change Jewelry!");
-
-        existingValuating.setValuation_value(valuating.getValuation_value());
-        existingValuating.setStatus(valuating.getStatus());
-        existingValuating.setNotes(valuating.getNotes());
-        existingValuating.setDesiredPrice(valuating.getDesiredPrice());
-        existingValuating.setPaymentMethod(valuating.getPaymentMethod());
-
         return this.saveValuatingAndUpdateJewelry(existingValuating);
     }
 
