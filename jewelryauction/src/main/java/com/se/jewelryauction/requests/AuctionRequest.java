@@ -16,6 +16,5 @@ public class AuctionRequest {
 
     private Date endTime;
 
-    private float step;
 
 }

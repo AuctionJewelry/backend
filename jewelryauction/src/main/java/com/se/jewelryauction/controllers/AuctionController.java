@@ -2,10 +2,8 @@ package com.se.jewelryauction.controllers;
 
 import com.se.jewelryauction.components.apis.CoreApiResponse;
 import com.se.jewelryauction.models.AuctionEntity;
-import com.se.jewelryauction.models.BrandEntity;
 import com.se.jewelryauction.models.enums.AuctionStatus;
 import com.se.jewelryauction.requests.AuctionRequest;
-import com.se.jewelryauction.requests.BrandRequest;
 import com.se.jewelryauction.services.IAuctionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

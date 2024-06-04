@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 @Service
 @RequiredArgsConstructor
@@ -34,6 +36,17 @@ public class AuctionService implements IAuctionService {
         return auctionRepository.save(auction);
     }
 
+    private void validateAuctionDuration(LocalDateTime startTime, LocalDateTime endTime) {
+        if (startTime.isAfter(endTime)) {
+            throw new IllegalArgumentException("Start time cannot be after end time");
+        }
+
+        Duration duration = Duration.between(startTime, endTime);
+
+        if (duration.toDays() < 1 || duration.toDays() > 7) {
+            throw new IllegalArgumentException("Auction duration must be between 1 and 7 days");
+        }
+    }
     @Override
     public AuctionEntity getAuctionById(long id) {
         return auctionRepository.findById(id)

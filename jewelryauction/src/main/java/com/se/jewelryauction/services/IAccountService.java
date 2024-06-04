@@ -1,0 +1,20 @@
+package com.se.jewelryauction.services;
+
+import com.se.jewelryauction.models.BrandEntity;
+import com.se.jewelryauction.models.UserEntity;
+import com.se.jewelryauction.requests.UpdateUserRequest;
+
+import java.util.List;
+
+public interface IAccountService {
+    UserEntity createAccountStaff(UserEntity user);
+    UserEntity createAccountManager(UserEntity user);
+
+    UserEntity getUserById(Long id);
+    UserEntity getUserResponeById(Long id);
+    UserEntity updateUser(Long id, UpdateUserRequest update);
+
+    List<UserEntity> getAllUser();
+
+    UserEntity banUser(Long id);
+}

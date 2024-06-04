@@ -48,4 +48,6 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<TokenEntity> tokens;
+
+    private Boolean is_active= true;
 }
