@@ -11,7 +11,6 @@ public interface IAccountService {
     UserEntity createAccountManager(UserEntity user);
 
     UserEntity getUserById(Long id);
-    UserEntity getUserResponeById(Long id);
     UserEntity updateUser(Long id, UpdateUserRequest update);
 
     List<UserEntity> getAllUser();

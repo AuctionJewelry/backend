@@ -50,11 +50,6 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public UserEntity getUserResponeById(Long id) {
-        return null;
-    }
-
-    @Override
     public UserEntity updateUser(Long id, UpdateUserRequest update) {
         UserEntity existingUser = userRepository
                 .findById(id)
