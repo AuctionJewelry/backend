@@ -3,10 +3,7 @@ package com.se.jewelryauction.controllers;
 import com.se.jewelryauction.components.apis.CoreApiResponse;
 import com.se.jewelryauction.components.configurations.AppProperties;
 import com.se.jewelryauction.components.exceptions.AppException;
-import com.se.jewelryauction.requests.UserForgotPasswordRequest;
-import com.se.jewelryauction.requests.UserRefreshRequest;
-import com.se.jewelryauction.requests.UserSignInRequest;
-import com.se.jewelryauction.requests.UserSignUpRequest;
+import com.se.jewelryauction.requests.*;
 import com.se.jewelryauction.responses.RefreshResponse;
 import com.se.jewelryauction.responses.SignInResponse;
 import com.se.jewelryauction.services.IUserService;
@@ -74,8 +71,8 @@ public class UserController {
 
     @GetMapping("/forgotpassword")
     public CoreApiResponse<?> forgotPassword(
-            @RequestBody String email
-    ){
+            @Valid @RequestParam String email
+            ){
         userService.sendMailForgotPassword(email);
         return CoreApiResponse.success("Check your mail");
     }
