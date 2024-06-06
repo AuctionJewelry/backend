@@ -2,9 +2,10 @@ package com.se.jewelryauction.models.enums;
 
 public enum AuctionStatus {
     Waiting,
-    Inprogess,
+    InProgress,
     Completed,
-    Cancel
+    Cancel,
+    Fail
 
 
 }

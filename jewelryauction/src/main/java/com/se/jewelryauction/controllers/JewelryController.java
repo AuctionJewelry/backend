@@ -6,6 +6,7 @@ import com.se.jewelryauction.requests.JewelryRequest;
 import com.se.jewelryauction.services.IJewelryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +22,7 @@ public class JewelryController {
     private final IJewelryService jewelryService;
 
     @PostMapping("")
+    @PreAuthorize("isAuthenticated()")
     public CoreApiResponse<JewelryEntity> createJewelry(
             @Valid @ModelAttribute JewelryRequest jewelryRequest,
             @RequestParam(name = "imageThumbnail", required = false) MultipartFile imageThumbnail,
@@ -57,6 +59,12 @@ public class JewelryController {
     ){
         jewelryService.deleteJewelry(id);
         return CoreApiResponse.success("Delete jewelry successfully");
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public List<JewelryEntity> getJewelryBySellerId() {
+        return jewelryService.getJewelryBySellerId();
     }
 
 }

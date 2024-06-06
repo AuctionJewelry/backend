@@ -207,11 +207,17 @@ public class JewelryService implements IJewelryService {
     }
 
 
-
-
     @Override
     public void deleteJewelry(long id) {
         JewelryEntity existingJewelry = getJewelryById(id);
         jewelryRepository.deleteById(id);
+    }
+
+    @Override
+    public List<JewelryEntity> getJewelryBySellerId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
+        return jewelryRepository.findBySellerId(user.getId());
     }
 }

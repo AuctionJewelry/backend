@@ -16,5 +16,7 @@ public interface IJewelryService {
     void deleteJewelry(long id);
     void uploadThumbnail(Long jewelryId, MultipartFile imageFile) throws IOException;
 
+    List<JewelryEntity> getJewelryBySellerId();
+
 
 }
