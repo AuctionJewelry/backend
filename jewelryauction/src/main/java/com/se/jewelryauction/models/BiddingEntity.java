@@ -27,6 +27,8 @@ public class BiddingEntity {
     private UserEntity customer;
 
     private float bidAmount;
+
     private Date bidTime;
+
     private boolean autoBid;
 }

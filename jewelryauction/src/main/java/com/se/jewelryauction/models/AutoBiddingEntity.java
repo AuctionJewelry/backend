@@ -26,5 +26,6 @@ public class AutoBiddingEntity {
     private UserEntity customer;
 
     private float maxBid;
+
     private Date bidTime;
 }
