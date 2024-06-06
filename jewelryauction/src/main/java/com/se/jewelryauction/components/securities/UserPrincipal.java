@@ -6,10 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Data
 @Getter
@@ -22,9 +24,25 @@ public class UserPrincipal implements UserDetails {
         this.user = user;
     }
 
-    public static UserPrincipal create(UserEntity user) {
-        return new UserPrincipal(user);
+    private Collection<? extends GrantedAuthority> authorities;
+
+
+    public UserPrincipal(UserEntity user, Collection<? extends GrantedAuthority> authorities) {
+        this.user = user;
+        this.authorities = authorities;
     }
+
+    public static UserPrincipal create(UserEntity user) {
+        List<GrantedAuthority> authorities = Collections.
+                singletonList(new SimpleGrantedAuthority("ROLE_"+user.getRole_id().getName().toUpperCase()));
+
+        return new UserPrincipal(
+                user,
+                authorities
+        );
+    }
+
+
 
     public Long getId() {
         return user.getId();
@@ -66,6 +84,6 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        return authorities;
     }
 }

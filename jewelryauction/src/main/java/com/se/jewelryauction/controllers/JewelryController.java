@@ -22,7 +22,7 @@ public class JewelryController {
     private final IJewelryService jewelryService;
 
     @PostMapping("")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER')")
     public CoreApiResponse<JewelryEntity> createJewelry(
             @Valid @ModelAttribute JewelryRequest jewelryRequest,
             @RequestParam(name = "imageThumbnail", required = false) MultipartFile imageThumbnail,
@@ -62,7 +62,7 @@ public class JewelryController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER')")
     public List<JewelryEntity> getJewelryBySellerId() {
         return jewelryService.getJewelryBySellerId();
     }
