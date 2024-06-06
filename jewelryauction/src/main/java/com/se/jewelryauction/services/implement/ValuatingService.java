@@ -2,6 +2,7 @@ package com.se.jewelryauction.services.implement;
 
 import com.se.jewelryauction.components.exceptions.AppException;
 import com.se.jewelryauction.models.*;
+import com.se.jewelryauction.models.enums.DeliveryStatus;
 import com.se.jewelryauction.models.enums.JewelryStatus;
 import com.se.jewelryauction.models.enums.ValuatingStatus;
 import com.se.jewelryauction.repositories.*;
@@ -19,7 +20,7 @@ import java.util.List;
 public class ValuatingService implements IValuatingServcie {
     private final IUserRepository userRepository;
     private final IJewelryRepository jewelryRepository;
-//    private final IDeliveryMethodRepository deliveryMethodRepository;
+    private final IDeliveryMethodRepository deliveryMethodRepository;
     private final IJewelryMaterialRepository jewelryMaterialRepository;
     private final IValuatingRepository valuatingRepository;
     private final IMaterialRepository materialRepository;
@@ -93,13 +94,13 @@ public class ValuatingService implements IValuatingServcie {
             if (existingValuating.getJewelry().getId() != jewelry.getId())
                 throw new AppException(HttpStatus.BAD_REQUEST, "Can not change Jewelry!");
 
-            existingValuating.setValuation_value(valuating.getValuation_value());
-            existingValuating.setStatus(valuating.getStatus());
-            existingValuating.setNotes(valuating.getNotes());
-            existingValuating.setDesiredPrice(valuating.getDesiredPrice());
-            existingValuating.setPaymentMethod(valuating.getPaymentMethod());
-            existingValuating.setValuatingMethod(valuating.getValuatingMethod());
-            existingValuating.setValuatingFee(valuating.getValuatingFee());
+            existingValuating.setValuation_value(valuating.getValuation_value() != 0 ? valuating.getValuation_value() : existingValuating.getValuation_value());
+            existingValuating.setStatus(valuating.getStatus() != null ? valuating.getStatus() : existingValuating.getStatus());
+            existingValuating.setNotes(valuating.getNotes() != null ? valuating.getNotes() : existingValuating.getNotes());
+            existingValuating.setDesiredPrice(valuating.getDesiredPrice() != 0 ? valuating.getDesiredPrice() : existingValuating.getDesiredPrice());
+            existingValuating.setPaymentMethod(valuating.getPaymentMethod() != null ? valuating.getPaymentMethod() : existingValuating.getPaymentMethod());
+            existingValuating.setValuatingMethod(valuating.getValuatingMethod() != null ? valuating.getValuatingMethod() : existingValuating.getValuatingMethod());
+            existingValuating.setValuatingFee(valuating.getValuatingFee() != 0 ? valuating.getValuatingFee() : existingValuating.getValuatingFee());
         }
         return this.saveValuatingAndUpdateJewelry(existingValuating);
 
@@ -116,6 +117,7 @@ public class ValuatingService implements IValuatingServcie {
     private ValuatingEntity saveValuatingAndUpdateJewelry(ValuatingEntity valuating){
         ValuatingEntity valuatingEntity = valuatingRepository.save(valuating);
         this.triggerUpdateStatusJewelry(valuating);
+        this.triggerCreateDeliveryMethod(valuating);
         return valuatingEntity;
     }
 
@@ -139,6 +141,24 @@ public class ValuatingService implements IValuatingServcie {
         return jewelryRepository.save(jewelry);
     }
 
+    private DeliveryMethodEntity triggerCreateDeliveryMethod(ValuatingEntity valuating){
+        JewelryEntity jewelry = jewelryRepository.findById(valuating.getJewelry().getId())
+                .orElseThrow(()
+                        -> new AppException(HttpStatus.BAD_REQUEST, "There is no Jewelry!"));
+        DeliveryMethodEntity deliveryMethod = new DeliveryMethodEntity();
+        if(!valuating.isOnline()){
+            if (valuating.getStatus() == ValuatingStatus.VALUATED){
+                deliveryMethod.setValuatingDelivery(true);
+                deliveryMethod.setUser(jewelry.getSellerId());
+                deliveryMethod.setJewelry(jewelry);
+                deliveryMethod.setAddress("Cty TNHH Jewelry Auction");
+                deliveryMethod.setStaff(valuating.getStaff());
+                deliveryMethod.setFull_name("Cty TNHH Jewelry Auction");
+                deliveryMethod.setStatus(DeliveryStatus.DELIVERING);
+            }
+        }
+        return deliveryMethodRepository.save(deliveryMethod);
+    }
 
 
 }

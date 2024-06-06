@@ -20,6 +20,9 @@ public class UpdateValuatingRequest {
 
     @NotNull(message = "isOnline is required!")
     private boolean isOnline;
+
+    @NotNull(message = "Staff ID cannot be null")
+    @Min(value = 1, message = "Staff ID must be greater than or equal to 1")
     private int staffId;
     private float valuation_value;
     private String notes;
