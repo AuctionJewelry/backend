@@ -8,11 +8,14 @@ import com.se.jewelryauction.models.JewelryEntity;
 import com.se.jewelryauction.models.UserEntity;
 import com.se.jewelryauction.models.enums.AuctionStatus;
 import com.se.jewelryauction.models.enums.JewelryCondition;
+import com.se.jewelryauction.models.enums.JewelryStatus;
 import com.se.jewelryauction.models.enums.Sex;
 import com.se.jewelryauction.repositories.IAuctionRepository;
 import com.se.jewelryauction.repositories.IJewelryRepository;
 import com.se.jewelryauction.services.IAuctionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,17 +34,25 @@ public class AuctionService implements IAuctionService {
 
     @Override
     public AuctionEntity createAuction(AuctionEntity auction) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
         validateAuctionDuration(auction.getStartTime(), auction.getEndTime());
         JewelryEntity existingJewelry = jewelryRepository
                 .findById(auction.getJewelry().getId())
                 .orElseThrow(() ->
                         new DataNotFoundException(
                                 "Jewelry", "id", auction.getJewelry().getId()));
+
+        if (auction.getJewelry().getSellerId().getId().equals(user.getId())) {
+            throw new AppException(HttpStatus.UNAUTHORIZED,"Bạn không có quyền truy cập");
+        }
         List<AuctionEntity> activeAuctions = auctionRepository
                 .findActiveAuctionsByJewelryId(existingJewelry.getId());
         if (!activeAuctions.isEmpty()) {
             throw new AppException(HttpStatus.BAD_REQUEST,"Jewelry already has an active auction.");
         }
+        existingJewelry.setStatus(JewelryStatus.AUCTIONING);
         auction.setJewelry(existingJewelry);
         auction.setStatus(AuctionStatus.Waiting);
 
@@ -51,8 +62,19 @@ public class AuctionService implements IAuctionService {
     
     @Override
     public AuctionEntity getAuctionById(long id) {
-        return auctionRepository.findById(id)
-                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This auction is not existed!"));    }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
+
+        AuctionEntity auction = auctionRepository.findById(id)
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This auction is not existed!"));
+
+        if (auction.getJewelry().getSellerId().getId().equals(user.getId())) {
+            throw new AppException(HttpStatus.UNAUTHORIZED,"Bạn không có quyền truy cập");
+        }
+
+        return auction;
+    }
 
     @Override
     public List<AuctionEntity> getAllAuctions() {
@@ -87,11 +109,13 @@ public class AuctionService implements IAuctionService {
     }
 
     @Override
-    public List<AuctionEntity> searchAuctions(
+    public Page<AuctionEntity> searchAuctions(
             Long collectionId, Long categoryId, Float minPrice, Float maxPrice,
-            Long brandId, JewelryCondition jewelryCondition, AuctionStatus status, Sex sex) {
-        return auctionRepository.searchAuctions(
-                collectionId, categoryId, minPrice, maxPrice, brandId, jewelryCondition, status, sex);
+            Long brandId, JewelryCondition jewelryCondition, AuctionStatus status, Sex sex, PageRequest pageRequest) {
+        Page<AuctionEntity> auctionListPage;
+        auctionListPage = auctionRepository.searchAuctions(
+                collectionId, categoryId, minPrice, maxPrice, brandId, jewelryCondition, status, sex, pageRequest);
+        return auctionListPage;
     }
 
 

@@ -9,6 +9,9 @@ import com.se.jewelryauction.requests.AuctionRequest;
 import com.se.jewelryauction.services.IAuctionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -66,8 +69,26 @@ public class AuctionController {
         return auctionService.getMyAuctionsByStatus(status);
     }
 
+    @GetMapping("/viewauction")
+    public Page<AuctionEntity> viewAuction(
+            @RequestParam(required = false) Long collectionId,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Float minPrice,
+            @RequestParam(required = false) Float maxPrice,
+            @RequestParam(required = false) Long brandId,
+            @RequestParam(required = false) JewelryCondition jewelryCondition,
+            @RequestParam(required = false) Sex sex,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int limit) {
+        PageRequest pageRequest = PageRequest.of(
+                page, limit,
+                Sort.by("createdAt").descending()
+        );
+        return auctionService.searchAuctions(collectionId, categoryId, minPrice, maxPrice, brandId, jewelryCondition, AuctionStatus.InProgress, sex,pageRequest);
+    }
+
     @GetMapping("/search")
-    public List<AuctionEntity> searchAuctions(
+    public Page<AuctionEntity> searchAuctions(
             @RequestParam(required = false) Long collectionId,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) Float minPrice,
@@ -75,10 +96,14 @@ public class AuctionController {
             @RequestParam(required = false) Long brandId,
             @RequestParam(required = false) JewelryCondition jewelryCondition,
             @RequestParam(required = false) AuctionStatus status,
-            @RequestParam(required = false) Sex sex) {
-        return auctionService.searchAuctions(collectionId, categoryId, minPrice, maxPrice, brandId, jewelryCondition, status, sex);
+            @RequestParam(required = false) Sex sex,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int limit) {
+        PageRequest pageRequest = PageRequest.of(
+                page, limit,
+                Sort.by("createdAt").descending()
+        );
+        return auctionService.searchAuctions(collectionId, categoryId, minPrice, maxPrice, brandId, jewelryCondition, status, sex,pageRequest);
     }
-
-
 
 }
