@@ -4,6 +4,8 @@ import com.se.jewelryauction.models.AuctionEntity;
 import com.se.jewelryauction.models.enums.AuctionStatus;
 import com.se.jewelryauction.models.enums.JewelryCondition;
 import com.se.jewelryauction.models.enums.Sex;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -39,7 +41,7 @@ public interface IAuctionRepository extends JpaRepository<AuctionEntity, Long> {
             "(:jewelryCondition IS NULL OR a.jewelry.jewelryCondition = :jewelryCondition) AND " +
             "(:status IS NULL OR a.status = :status) AND " +
             "(:sex IS NULL OR a.jewelry.sex = :sex)")
-    List<AuctionEntity> searchAuctions(
+    Page<AuctionEntity> searchAuctions(
             @Param("collectionId") Long collectionId,
             @Param("categoryId") Long categoryId,
             @Param("minPrice") Float minPrice,
@@ -47,7 +49,8 @@ public interface IAuctionRepository extends JpaRepository<AuctionEntity, Long> {
             @Param("brandId") Long brandId,
             @Param("jewelryCondition") JewelryCondition jewelryCondition,
             @Param("status") AuctionStatus status,
-            @Param("sex") Sex sex);
+            @Param("sex") Sex sex,
+            Pageable pageable);
 
     @Query("SELECT a FROM AuctionEntity a WHERE a.jewelry.id = :jewelryId AND a.status NOT IN ('FAIL', 'CANCEL')")
     List<AuctionEntity> findActiveAuctionsByJewelryId(Long jewelryId);

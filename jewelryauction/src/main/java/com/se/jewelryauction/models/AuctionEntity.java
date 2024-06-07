@@ -33,6 +33,10 @@ public class AuctionEntity {
 
     private float currentPrice;
 
+    @ManyToOne
+    @JoinColumn(name = "winner_id")
+    private UserEntity winner;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
     private AuctionStatus status;
