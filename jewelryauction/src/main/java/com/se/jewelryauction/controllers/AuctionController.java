@@ -58,7 +58,7 @@ public class AuctionController {
         return auctionService.getAuctionsByCategoryId(categoryId);
     }
 
-    @GetMapping("/category/{collectionId}")
+    @GetMapping("/collection/{collectionId}")
     public List<AuctionEntity> getAuctionsByCollectionId(@PathVariable Long collectionId) {
         return auctionService.getAuctionsByCollectionId(collectionId);
     }
