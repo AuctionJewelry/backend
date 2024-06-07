@@ -14,7 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuctionEntity {
+public class AuctionEntity extends BaseEntiy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

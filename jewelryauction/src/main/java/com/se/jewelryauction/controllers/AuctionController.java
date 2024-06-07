@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ import static com.se.jewelryauction.mappers.AuctionMapper.INSTANCE;
 @RequiredArgsConstructor
 public class AuctionController {
     private final IAuctionService auctionService;
-
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("")
     public CoreApiResponse<AuctionEntity> createAuction(
             @Valid @RequestBody AuctionRequest auctionRequest
@@ -82,7 +83,7 @@ public class AuctionController {
             @RequestParam(defaultValue = "20") int limit) {
         PageRequest pageRequest = PageRequest.of(
                 page, limit,
-                Sort.by("createdAt").descending()
+                Sort.by("created_at").descending()
         );
         return auctionService.searchAuctions(collectionId, categoryId, minPrice, maxPrice, brandId, jewelryCondition, AuctionStatus.InProgress, sex,pageRequest);
     }
@@ -101,7 +102,7 @@ public class AuctionController {
             @RequestParam(defaultValue = "12") int limit) {
         PageRequest pageRequest = PageRequest.of(
                 page, limit,
-                Sort.by("createdAt").descending()
+                Sort.by("created_at").descending()
         );
         return auctionService.searchAuctions(collectionId, categoryId, minPrice, maxPrice, brandId, jewelryCondition, status, sex,pageRequest);
     }

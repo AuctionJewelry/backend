@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 @Service
@@ -38,13 +40,18 @@ public class AuctionService implements IAuctionService {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         UserEntity user = userPrincipal.getUser();
         validateAuctionDuration(auction.getStartTime(), auction.getEndTime());
+
+        if (!isStartTimeValid(auction.getStartTime())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Thời gian bắt đầu phải sau thời gian tạo ít nhất 2 phút.");
+        }
+
         JewelryEntity existingJewelry = jewelryRepository
                 .findById(auction.getJewelry().getId())
                 .orElseThrow(() ->
                         new DataNotFoundException(
                                 "Jewelry", "id", auction.getJewelry().getId()));
 
-        if (auction.getJewelry().getSellerId().getId().equals(user.getId())) {
+        if (!existingJewelry.getSellerId().getId().equals(user.getId())) {
             throw new AppException(HttpStatus.UNAUTHORIZED,"Bạn không có quyền truy cập");
         }
         List<AuctionEntity> activeAuctions = auctionRepository
@@ -136,5 +143,12 @@ public class AuctionService implements IAuctionService {
         }
     }
 
+    private boolean isStartTimeValid(Date startTime) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime start = startTime.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+        return start.isAfter(now.plusMinutes(2));
+    }
 
 }
