@@ -64,6 +64,7 @@ public class AuctionController {
         return auctionService.getAuctionsByCollectionId(collectionId);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/myauction")
     public List<AuctionEntity> getAuctionsBySellerIdAndStatus(
             @RequestParam(required = false) AuctionStatus status) {

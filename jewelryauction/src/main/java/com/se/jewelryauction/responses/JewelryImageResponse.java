@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 public class JewelryImageResponse {
     private int id;
-    private String imageUrl;
+    private String url;
 
 }

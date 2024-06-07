@@ -24,9 +24,9 @@ public class JewelryImageController {
         return CoreApiResponse.success(jewelryImages,"Jewelry image uploaded successfully");
     }
 
-    @GetMapping("/bird/{birdId}")
-    public CoreApiResponse<List<JewelryImageResponse>> getAllImageByBirdId(@PathVariable Long birdId) {
-        List<JewelryImageEntity> images = jewelryImageService.getAllImages(birdId);
+    @GetMapping("/jewelry/{jewelryId}")
+    public CoreApiResponse<List<JewelryImageResponse>> getAllImageByBirdId(@PathVariable Long jewelryId) {
+        List<JewelryImageEntity> images = jewelryImageService.getAllImages(jewelryId);
         return CoreApiResponse.success(INSTANCE.toListResponse(images));
 
     }
