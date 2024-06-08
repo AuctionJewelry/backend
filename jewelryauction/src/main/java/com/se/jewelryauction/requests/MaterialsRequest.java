@@ -12,6 +12,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MaterialsRequest {
-    @NotNull(message = "Materials cannot be null")
-    Map<Long, Float> materials;
+    private Long materialID;
+
+    private float price;
 }

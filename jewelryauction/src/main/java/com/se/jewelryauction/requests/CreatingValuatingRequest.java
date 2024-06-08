@@ -3,6 +3,8 @@ package com.se.jewelryauction.requests;
 import jakarta.validation.Valid;
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @Getter
 @Setter
@@ -13,5 +15,5 @@ public class CreatingValuatingRequest {
     private ValuatingRequest request;
 
     @Valid
-    private MaterialsRequest materialsRequest;
+    private List<MaterialsRequest> materialsRequest;
 }

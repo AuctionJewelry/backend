@@ -24,7 +24,7 @@ public class ValuatingController {
     @PostMapping("")
     public CoreApiResponse<ValuatingEntity> createValuating(
             @Valid @RequestBody CreatingValuatingRequest creatingValuatingRequest
-            ){
+    ){
         ValuatingEntity birdTypeResponse = valuatingService.createValuating(
                 INSTANCE.toModel(creatingValuatingRequest.getRequest()),
                 creatingValuatingRequest.getMaterialsRequest());

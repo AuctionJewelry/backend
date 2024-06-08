@@ -7,7 +7,7 @@ import com.se.jewelryauction.services.implement.MaterialService;
 import java.util.List;
 
 public interface IValuatingServcie {
-    ValuatingEntity createValuating(ValuatingEntity valuating, MaterialsRequest map) ;
+    ValuatingEntity createValuating(ValuatingEntity valuating, List<MaterialsRequest> list) ;
     ValuatingEntity getValuatingById(long id);
     List<ValuatingEntity> getAllValuating();
     ValuatingEntity updateValuating(long valuatingId, ValuatingEntity valuating);
