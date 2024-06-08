@@ -27,7 +27,7 @@ public class ValuatingService implements IValuatingServcie {
 //    private final IJewelryRepository jewelryRepository;
 
     @Override
-    public ValuatingEntity createValuating(ValuatingEntity valuating, MaterialsRequest map) {
+    public ValuatingEntity createValuating(ValuatingEntity valuating, List<MaterialsRequest> list) {
 
         JewelryEntity jewelry = jewelryRepository.findById(valuating.getJewelry().getId())
                 .orElseThrow(()
@@ -36,16 +36,21 @@ public class ValuatingService implements IValuatingServcie {
             float totalPrice = 0;
             List<JewelryMaterialEntity> jewelryMaterialEntities = jewelryMaterialRepository.findByJewelryId(jewelry.getId());
             for(var jerMat : jewelryMaterialEntities ){
-                var quantity = map.getMaterials().get(jerMat.getMaterial().getId());
-                if(quantity == null){
-                    throw new AppException(HttpStatus.BAD_REQUEST, "Material does not exist");
+                float quantity = 0;
+                for(var material: list){
+                    if(jerMat.getMaterial().getId() == material.getMaterialID()){
+                        quantity = material.getPrice();
+                    }
                 }
-                totalPrice += jerMat.getWeight() * quantity.floatValue();
+                if (quantity == 0){
+                    throw new AppException(HttpStatus.BAD_REQUEST, "Can not find price of Meterial: " + jerMat.getMaterial().getName());
+                }
+                totalPrice += jerMat.getWeight() * quantity;
             }
             valuating.setJewelry(jewelry);
             valuating.setValuation_value(totalPrice);
             valuating.setStatus(ValuatingStatus.VALUATED);
-            valuating.setValuatingFee(500000);
+            valuating.setValuatingFee(0);
             valuating.setStaff(null);
 
         }
@@ -81,26 +86,46 @@ public class ValuatingService implements IValuatingServcie {
         ValuatingEntity existingValuating = this.getValuatingById(valuatingId);
         if(!existingValuating.isOnline()){
             UserEntity user;
-            if (valuating.getStaff() != null){
+            if (valuating.getStaff().getId() != 0){
                 user = userRepository.findById(valuating.getStaff().getId())
                         .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "User doesn't exist"));
                 existingValuating.setStaff(user);
             }
 
-            JewelryEntity jewelry = jewelryRepository.findById(valuating.getJewelry().getId())
-                    .orElseThrow(()
-                            -> new AppException(HttpStatus.BAD_REQUEST, "Jewelry doesn't exist!"));
+            existingValuating.setAddress(
+                    (valuating.getAddress() != null)
+                            ? valuating.getAddress()
+                            : existingValuating.getAddress());
 
-            if (existingValuating.getJewelry().getId() != jewelry.getId())
-                throw new AppException(HttpStatus.BAD_REQUEST, "Can not change Jewelry!");
+            existingValuating.setValuation_value(
+                    valuating.getValuation_value() != 0
+                            ? valuating.getValuation_value()
+                            : existingValuating.getValuation_value());
 
-            existingValuating.setValuation_value(valuating.getValuation_value() != 0 ? valuating.getValuation_value() : existingValuating.getValuation_value());
-            existingValuating.setStatus(valuating.getStatus() != null ? valuating.getStatus() : existingValuating.getStatus());
-            existingValuating.setNotes(valuating.getNotes() != null ? valuating.getNotes() : existingValuating.getNotes());
-            existingValuating.setDesiredPrice(valuating.getDesiredPrice() != 0 ? valuating.getDesiredPrice() : existingValuating.getDesiredPrice());
-            existingValuating.setPaymentMethod(valuating.getPaymentMethod() != null ? valuating.getPaymentMethod() : existingValuating.getPaymentMethod());
-            existingValuating.setValuatingMethod(valuating.getValuatingMethod() != null ? valuating.getValuatingMethod() : existingValuating.getValuatingMethod());
-            existingValuating.setValuatingFee(valuating.getValuatingFee() != 0 ? valuating.getValuatingFee() : existingValuating.getValuatingFee());
+            existingValuating.setStatus(
+                    valuating.getStatus() != null
+                            ? valuating.getStatus()
+                            : existingValuating.getStatus());
+
+            existingValuating.setNotes(
+                    (valuating.getNotes() != null)
+                            ? valuating.getNotes()
+                            : existingValuating.getNotes());
+
+            existingValuating.setDesiredPrice(
+                    valuating.getDesiredPrice() != 0
+                            ? valuating.getDesiredPrice()
+                            : existingValuating.getDesiredPrice());
+
+            existingValuating.setPaymentMethod(
+                    valuating.getPaymentMethod() != null
+                            ? valuating.getPaymentMethod()
+                            : existingValuating.getPaymentMethod());
+
+            existingValuating.setValuatingMethod(
+                    valuating.getValuatingMethod() != null
+                            ? valuating.getValuatingMethod()
+                            : existingValuating.getValuatingMethod());
         }
         return this.saveValuatingAndUpdateJewelry(existingValuating);
 

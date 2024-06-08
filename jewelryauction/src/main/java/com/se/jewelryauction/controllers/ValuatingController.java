@@ -27,7 +27,7 @@ public class ValuatingController {
             ){
         ValuatingEntity birdTypeResponse = valuatingService.createValuating(
                 INSTANCE.toModel(creatingValuatingRequest.getRequest()),
-                creatingValuatingRequest.getMaterialsRequest());
+                creatingValuatingRequest.getMaterialsRequestList());
         return CoreApiResponse.success(birdTypeResponse,"Insert valuating successfully");
     }
 
