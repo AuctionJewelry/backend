@@ -25,4 +25,6 @@ public interface IAuctionService {
             Long collectionId, Long categoryId, Float minPrice, Float maxPrice,
             Long brandId, JewelryCondition jewelryCondition, AuctionStatus status, Sex sex, PageRequest pageRequest);
 
+    void cancelAuction(long id);
+
 }
