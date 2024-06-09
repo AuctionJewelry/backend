@@ -12,7 +12,6 @@ import org.mapstruct.factory.Mappers;
 public interface ValuatingMapper {
     ValuatingMapper INSTANCE = Mappers.getMapper(ValuatingMapper.class);
 
-    @Mapping(source = "staffId", target = "staff.id")
     @Mapping(source = "jewelryId", target = "jewelry.id")
     @Mapping(source = "online", target = "isOnline")
     ValuatingEntity toModel(ValuatingRequest request);

@@ -25,7 +25,6 @@ public class ValuatingRequest {
 
     private float desiredPrice;
     private PaymentMethod paymentMethod;
-    private int staffId;
     private String notes;
     private ValuatingMethod valuatingMethod;
 }

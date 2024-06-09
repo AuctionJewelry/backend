@@ -15,7 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ValuatingEntity {
+public class ValuatingEntity  extends BaseEntiy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

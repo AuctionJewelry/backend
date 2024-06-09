@@ -2,7 +2,9 @@ package com.se.jewelryauction.services.implement;
 
 import com.se.jewelryauction.components.exceptions.AppException;
 import com.se.jewelryauction.models.*;
+import com.se.jewelryauction.models.enums.DeliveryStatus;
 import com.se.jewelryauction.models.enums.JewelryStatus;
+import com.se.jewelryauction.models.enums.ValuatingMethod;
 import com.se.jewelryauction.models.enums.ValuatingStatus;
 import com.se.jewelryauction.repositories.*;
 import com.se.jewelryauction.requests.MaterialsRequest;
@@ -19,7 +21,7 @@ import java.util.List;
 public class ValuatingService implements IValuatingServcie {
     private final IUserRepository userRepository;
     private final IJewelryRepository jewelryRepository;
-//    private final IDeliveryMethodRepository deliveryMethodRepository;
+    private final IDeliveryMethodRepository deliveryMethodRepository;
     private final IJewelryMaterialRepository jewelryMaterialRepository;
     private final IValuatingRepository valuatingRepository;
     private final IMaterialRepository materialRepository;
@@ -50,19 +52,14 @@ public class ValuatingService implements IValuatingServcie {
             valuating.setValuation_value(totalPrice);
             valuating.setStatus(ValuatingStatus.VALUATED);
             valuating.setValuatingFee(0);
-            valuating.setStaff(null);
-
         }
         else{
-            UserEntity staff = userRepository.findById(valuating.getStaff().getId())
-                    .orElseThrow(()
-                            -> new AppException(HttpStatus.BAD_REQUEST, "User doesn't exist"));
             //Sending email to confirm about request check jewelry
             valuating.setJewelry(jewelry);
             valuating.setValuatingFee(500000);
-            valuating.setStaff(staff);
             valuating.setStatus(ValuatingStatus.REQUEST);
         }
+        valuating.setStaff(null);
         return  this.saveValuatingAndUpdateJewelry(valuating);
 
     }
@@ -141,6 +138,9 @@ public class ValuatingService implements IValuatingServcie {
     private ValuatingEntity saveValuatingAndUpdateJewelry(ValuatingEntity valuating){
         ValuatingEntity valuatingEntity = valuatingRepository.save(valuating);
         this.triggerUpdateStatusJewelry(valuating);
+        if(valuating.getStatus() == ValuatingStatus.VALUATED){
+            this.triggerCreateDeliveryMethod(valuating);
+        }
         return valuatingEntity;
     }
 
@@ -158,29 +158,32 @@ public class ValuatingService implements IValuatingServcie {
                 jewelry.setStatus(JewelryStatus.OFFLINE_VALUATING);
             }
             else if (valuating.getStatus() == ValuatingStatus.VALUATED){
-                jewelry.setStatus(JewelryStatus.OFFLINE_VALUATED);
+                if(valuating.getValuatingMethod() == ValuatingMethod.AT_HOME_VALUATION)
+                    jewelry.setStatus(JewelryStatus.VALUATING_DELIVERING);
+                if(valuating.getValuatingMethod() == ValuatingMethod.DIRECTLY_VALUATION)
+                    jewelry.setStatus(JewelryStatus.STORED);
             }
         }
         return jewelryRepository.save(jewelry);
     }
 
-//    private DeliveryMethodEntity triggerCreateDeliveryMethod(ValuatingEntity valuating){
-//        JewelryEntity jewelry = jewelryRepository.findById(valuating.getJewelry().getId())
-//                .orElseThrow(()
-//                        -> new AppException(HttpStatus.BAD_REQUEST, "There is no Jewelry!"));
-//        DeliveryMethodEntity deliveryMethod = new DeliveryMethodEntity();
-//        if(!valuating.isOnline()){
-//            if (valuating.getStatus() == ValuatingStatus.VALUATED){
-//                deliveryMethod.setValuatingDelivery(true);
-//                deliveryMethod.setUser(jewelry.getSellerId());
-//                deliveryMethod.setJewelry(jewelry);
-//                deliveryMethod.setAddress("Cty TNHH Jewelry Auction");
-//                deliveryMethod.setStaff(valuating.getStaff());
-//                deliveryMethod.setFull_name("Cty TNHH Jewelry Auction");
-//                deliveryMethod.setStatus(DeliveryStatus.DELIVERING);
-//            }
-//        }
-//        return deliveryMethodRepository.save(deliveryMethod);
-//    }
+    private DeliveryMethodEntity triggerCreateDeliveryMethod(ValuatingEntity valuating){
+        JewelryEntity jewelry = jewelryRepository.findById(valuating.getJewelry().getId())
+                .orElseThrow(()
+                        -> new AppException(HttpStatus.BAD_REQUEST, "There is no Jewelry!"));
+        DeliveryMethodEntity deliveryMethod = new DeliveryMethodEntity();
+        if(!valuating.isOnline()){
+            if (valuating.getStatus() == ValuatingStatus.VALUATED){
+                deliveryMethod.setValuatingDelivery(true);
+                deliveryMethod.setUser(jewelry.getSellerId());
+                deliveryMethod.setJewelry(jewelry);
+                deliveryMethod.setAddress("Cty TNHH Jewelry Auction");
+                deliveryMethod.setStaff(valuating.getStaff());
+                deliveryMethod.setFull_name("Cty TNHH Jewelry Auction");
+                deliveryMethod.setStatus(DeliveryStatus.DELIVERING);
+            }
+        }
+        return deliveryMethodRepository.save(deliveryMethod);
+    }
 
 }

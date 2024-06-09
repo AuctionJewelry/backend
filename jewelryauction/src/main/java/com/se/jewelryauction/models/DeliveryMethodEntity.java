@@ -22,11 +22,16 @@ public class DeliveryMethodEntity extends BaseEntiy {
     private UserEntity user;
 
     @ManyToOne
+    @JoinColumn(name = "jewelry_id")
+    private JewelryEntity jewelry;
+
+    @ManyToOne
     @JoinColumn(name = "staff_id")
     private UserEntity staff;
     private String full_name;
     private String phone_number;
     private String address;
     private DeliveryStatus status;
+    private boolean valuatingDelivery;
 
 }
