@@ -1,5 +1,7 @@
 package com.se.jewelryauction.models;
 
+import com.se.jewelryauction.models.enums.PaymentMethod;
+import com.se.jewelryauction.models.enums.ValuatingMethod;
 import com.se.jewelryauction.models.enums.ValuatingStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
@@ -13,7 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ValuatingEntity {
+public class ValuatingEntity  extends BaseEntiy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,9 +36,9 @@ public class ValuatingEntity {
     private boolean isOnline;
 
     private float desiredPrice;
-    private String paymentMethod;
+    private PaymentMethod paymentMethod;
     private float valuatingFee;
-    private String valuatingMethod;
-
+    private ValuatingMethod valuatingMethod;
+    private String address;
 
 }

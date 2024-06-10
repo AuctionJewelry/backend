@@ -1,6 +1,8 @@
 package com.se.jewelryauction.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.se.jewelryauction.models.enums.PaymentMethod;
+import com.se.jewelryauction.models.enums.ValuatingMethod;
 import com.se.jewelryauction.models.enums.ValuatingStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -22,8 +24,7 @@ public class ValuatingRequest {
     private boolean isOnline;
 
     private float desiredPrice;
-    private String paymentMethod;
-    private int staffId;
+    private PaymentMethod paymentMethod;
     private String notes;
-    private String valuatingMethod;
+    private ValuatingMethod valuatingMethod;
 }

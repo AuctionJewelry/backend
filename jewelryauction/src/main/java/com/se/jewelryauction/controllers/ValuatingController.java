@@ -9,6 +9,7 @@ import com.se.jewelryauction.requests.ValuatingRequest;
 import com.se.jewelryauction.services.IValuatingServcie;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class ValuatingController {
     @PostMapping("")
     public CoreApiResponse<ValuatingEntity> createValuating(
             @Valid @RequestBody CreatingValuatingRequest creatingValuatingRequest
-            ){
+    ){
         ValuatingEntity birdTypeResponse = valuatingService.createValuating(
                 INSTANCE.toModel(creatingValuatingRequest.getRequest()),
                 creatingValuatingRequest.getMaterialsRequest());
@@ -59,5 +60,13 @@ public class ValuatingController {
         valuatingService.deleteValuating(id);
         return CoreApiResponse.success("Delete valuating successfully");
     }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('USER')")
+    public CoreApiResponse<List<ValuatingEntity>> getValuatingByCurrentUser(){
+        List<ValuatingEntity> valuatingEntities = valuatingService.getValuatingByCurrentUser();
+        return CoreApiResponse.success(valuatingEntities);
+    }
+
 
 }
