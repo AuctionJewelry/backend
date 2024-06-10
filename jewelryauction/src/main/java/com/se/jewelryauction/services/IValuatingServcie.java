@@ -12,4 +12,6 @@ public interface IValuatingServcie {
     List<ValuatingEntity> getAllValuating();
     ValuatingEntity updateValuating(long valuatingId, ValuatingEntity valuating);
     void deleteValuating(long id);
+    List<ValuatingEntity> getValuatingByJewelryId(long id);
+    List<ValuatingEntity> getValuatingByCurrentUser();
 }

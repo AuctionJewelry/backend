@@ -1,6 +1,7 @@
 package com.se.jewelryauction.services.implement;
 
 import com.se.jewelryauction.components.exceptions.AppException;
+import com.se.jewelryauction.components.securities.UserPrincipal;
 import com.se.jewelryauction.models.*;
 import com.se.jewelryauction.models.enums.DeliveryStatus;
 import com.se.jewelryauction.models.enums.JewelryStatus;
@@ -12,8 +13,11 @@ import com.se.jewelryauction.requests.MaterialsRequest;
 import com.se.jewelryauction.services.IValuatingServcie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -135,6 +139,27 @@ public class ValuatingService implements IValuatingServcie {
         }
     }
 
+    @Override
+    public List<ValuatingEntity> getValuatingByJewelryId(long id) {
+        List<ValuatingEntity> valuatingEntities = valuatingRepository.findByJewelryId(id);
+        return valuatingEntities;
+    }
+
+    @Override
+    public List<ValuatingEntity> getValuatingByCurrentUser() {
+        List<ValuatingEntity> valuatingEntities = new ArrayList<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
+        if(user.getRole_id().getName().equalsIgnoreCase("staff")){
+            valuatingEntities = valuatingRepository.findByStaffId(user.getId());
+        }
+        else{
+            valuatingEntities = valuatingRepository.findByJewelrySellerId(user);
+        }
+        return valuatingEntities;
+    }
+
     private ValuatingEntity saveValuatingAndUpdateJewelry(ValuatingEntity valuating){
         ValuatingEntity valuatingEntity = valuatingRepository.save(valuating);
         this.triggerUpdateStatusJewelry(valuating);
@@ -162,6 +187,7 @@ public class ValuatingService implements IValuatingServcie {
                     jewelry.setStatus(JewelryStatus.VALUATING_DELIVERING);
                 if(valuating.getValuatingMethod() == ValuatingMethod.DIRECTLY_VALUATION)
                     jewelry.setStatus(JewelryStatus.STORED);
+                jewelry.setStaringPrice(valuating.getValuation_value());
             }
         }
         return jewelryRepository.save(jewelry);
