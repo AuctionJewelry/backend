@@ -3,6 +3,7 @@ package com.se.jewelryauction.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -13,7 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BiddingEntity {
+public class BiddingEntity extends BaseEntiy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,7 +29,8 @@ public class BiddingEntity {
 
     private float bidAmount;
 
-    private Date bidTime;
+    private LocalDateTime bidTime;
+
 
     private boolean autoBid;
 }

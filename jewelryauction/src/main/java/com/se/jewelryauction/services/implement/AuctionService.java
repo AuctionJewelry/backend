@@ -60,6 +60,7 @@ public class AuctionService implements IAuctionService {
             throw new AppException(HttpStatus.BAD_REQUEST,"Jewelry already has an active auction.");
         }
         existingJewelry.setStatus(JewelryStatus.AUCTIONING);
+        auction.setCurrentPrice(existingJewelry.getStaringPrice());
         auction.setJewelry(existingJewelry);
         auction.setStatus(AuctionStatus.Waiting);
 

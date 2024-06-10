@@ -2,6 +2,7 @@ package com.se.jewelryauction.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -27,5 +28,5 @@ public class AutoBiddingEntity {
 
     private float maxBid;
 
-    private Date bidTime;
+    private LocalDateTime bidTime;
 }
