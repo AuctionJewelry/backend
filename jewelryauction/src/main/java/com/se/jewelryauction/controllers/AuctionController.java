@@ -108,4 +108,12 @@ public class AuctionController {
         return auctionService.searchAuctions(collectionId, categoryId, minPrice, maxPrice, brandId, jewelryCondition, status, sex,pageRequest);
     }
 
+    @DeleteMapping("/{id}")
+    public CoreApiResponse<?> cancalAuctions(
+            @PathVariable Long id
+    ){
+        auctionService.cancelAuction(id);
+        return CoreApiResponse.success("Cancel auction successfully");
+    }
+
 }

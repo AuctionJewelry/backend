@@ -60,6 +60,7 @@ public class AuctionService implements IAuctionService {
             throw new AppException(HttpStatus.BAD_REQUEST,"Jewelry already has an active auction.");
         }
         existingJewelry.setStatus(JewelryStatus.AUCTIONING);
+        auction.setCurrentPrice(existingJewelry.getStaringPrice());
         auction.setJewelry(existingJewelry);
         auction.setStatus(AuctionStatus.Waiting);
 
@@ -69,16 +70,9 @@ public class AuctionService implements IAuctionService {
     
     @Override
     public AuctionEntity getAuctionById(long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        UserEntity user = userPrincipal.getUser();
 
         AuctionEntity auction = auctionRepository.findById(id)
                 .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This auction is not existed!"));
-
-        if (auction.getJewelry().getSellerId().getId().equals(user.getId())) {
-            throw new AppException(HttpStatus.UNAUTHORIZED,"Bạn không có quyền truy cập");
-        }
 
         return auction;
     }
@@ -125,7 +119,19 @@ public class AuctionService implements IAuctionService {
         return auctionListPage;
     }
 
+    @Override
+    public void cancelAuction(long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
+        AuctionEntity auction = auctionRepository.findById(id)
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This auction is not existed!"));
+        auction.setStatus(AuctionStatus.Cancel);
 
+        if (auction.getJewelry().getSellerId().getId().equals(user.getId())) {
+            throw new AppException(HttpStatus.UNAUTHORIZED,"Bạn không có quyền truy cập");
+        }
+    }
 
 
     private void validateAuctionDuration(Date startTime, Date endTime) {

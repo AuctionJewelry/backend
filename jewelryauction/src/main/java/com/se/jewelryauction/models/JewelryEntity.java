@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class JewelryEntity {
+public class JewelryEntity extends BaseEntiy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
