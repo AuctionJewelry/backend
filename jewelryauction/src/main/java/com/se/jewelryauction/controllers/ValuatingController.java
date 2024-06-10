@@ -62,7 +62,7 @@ public class ValuatingController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('STAFF') || hasRole('USER')")
     public CoreApiResponse<List<ValuatingEntity>> getValuatingByCurrentUser(){
         List<ValuatingEntity> valuatingEntities = valuatingService.getValuatingByCurrentUser();
         return CoreApiResponse.success(valuatingEntities);

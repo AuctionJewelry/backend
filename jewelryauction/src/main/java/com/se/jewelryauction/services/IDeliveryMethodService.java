@@ -10,4 +10,5 @@ public interface IDeliveryMethodService {
     DeliveryMethodEntity getDeliveryMethodByID(Long deliveryMethodId);
     List<DeliveryMethodEntity> getAllDeliveryMethods();
     void deleteDeliveryMethod(Long deliveryMethodId);
+    List<DeliveryMethodEntity> getDeliveryMethodByCurrentUser();
 }
