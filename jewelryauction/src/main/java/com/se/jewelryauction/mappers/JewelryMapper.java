@@ -25,7 +25,7 @@ public interface JewelryMapper {
     @Mapping(source = "brand", target = "brand.name")
     @Mapping(source = "collection", target = "collection.name")
     @Mapping(source = "materials", target = "jewelryMaterials")
-    void updateJewelryFromRequest(JewelryRequest request, @MappingTarget JewelryEntity bird);
+    void updateJewelryFromRequest(JewelryRequest request, @MappingTarget JewelryEntity jewelry);
 
     default List<JewelryMaterialEntity> mapMaterials(List<JewelryMaterialRequest> materials) {
         if (materials == null) {

@@ -29,7 +29,10 @@ public class ValuatingEntity  extends BaseEntiy {
     private JewelryEntity jewelry;
 
     private float valuation_value;
+
     private String notes;
+
+    @Enumerated(EnumType.STRING)
 
     private ValuatingStatus status;
 

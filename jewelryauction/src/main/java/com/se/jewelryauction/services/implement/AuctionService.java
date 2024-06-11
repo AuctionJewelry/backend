@@ -12,6 +12,7 @@ import com.se.jewelryauction.models.enums.JewelryStatus;
 import com.se.jewelryauction.models.enums.Sex;
 import com.se.jewelryauction.repositories.IAuctionRepository;
 import com.se.jewelryauction.repositories.IJewelryRepository;
+import com.se.jewelryauction.requests.UpdateTimeAuctionRequest;
 import com.se.jewelryauction.services.IAuctionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AuctionService implements IAuctionService {
@@ -52,12 +54,12 @@ public class AuctionService implements IAuctionService {
                                 "Jewelry", "id", auction.getJewelry().getId()));
 
         if (!existingJewelry.getSellerId().getId().equals(user.getId())) {
-            throw new AppException(HttpStatus.UNAUTHORIZED,"Bạn không có quyền truy cập");
+            throw new AppException(HttpStatus.UNAUTHORIZED, "Bạn không có quyền truy cập");
         }
         List<AuctionEntity> activeAuctions = auctionRepository
                 .findActiveAuctionsByJewelryId(existingJewelry.getId());
         if (!activeAuctions.isEmpty()) {
-            throw new AppException(HttpStatus.BAD_REQUEST,"Jewelry already has an active auction.");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Jewelry already has an active auction.");
         }
         existingJewelry.setStatus(JewelryStatus.AUCTIONING);
         auction.setCurrentPrice(existingJewelry.getStaringPrice());
@@ -67,7 +69,7 @@ public class AuctionService implements IAuctionService {
         return auctionRepository.save(auction);
     }
 
-    
+
     @Override
     public AuctionEntity getAuctionById(long id) {
 
@@ -82,13 +84,21 @@ public class AuctionService implements IAuctionService {
         return auctionRepository.findAll();
     }
 
-    @Override
-    public AuctionEntity updateStatusAuction(long auctionId, AuctionStatus status) {
-        AuctionEntity existingAuction = auctionRepository.findById(auctionId)
-                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This auction is not existed!"));
-        existingAuction.setStatus(status);
 
-        return auctionRepository.save(existingAuction);
+    @Override
+    public AuctionEntity updateTime(Long auctionId, UpdateTimeAuctionRequest request) {
+        AuctionEntity auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This auction is not existed!"));
+
+        if (request.getStartTime() != null) {
+            auction.setStartTime(request.getStartTime());
+        }
+        if (request.getEndTime() != null) {
+            auction.setEndTime(request.getEndTime());
+        }
+        return auctionRepository.save(auction);
+
+
     }
 
     @Override
@@ -129,14 +139,14 @@ public class AuctionService implements IAuctionService {
         auction.setStatus(AuctionStatus.Cancel);
 
         if (auction.getJewelry().getSellerId().getId().equals(user.getId())) {
-            throw new AppException(HttpStatus.UNAUTHORIZED,"Bạn không có quyền truy cập");
+            throw new AppException(HttpStatus.UNAUTHORIZED, "Bạn không có quyền truy cập");
         }
     }
 
 
     private void validateAuctionDuration(Date startTime, Date endTime) {
         if (startTime.after(endTime)) {
-            throw new AppException(HttpStatus.BAD_REQUEST,"Start time cannot be after end time");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Start time cannot be after end time");
         }
 
         Instant startInstant = startTime.toInstant();
@@ -145,7 +155,7 @@ public class AuctionService implements IAuctionService {
         Duration duration = Duration.between(startInstant, endInstant);
 
         if (duration.toDays() < 1 || duration.toDays() > 7) {
-            throw new AppException(HttpStatus.BAD_REQUEST,"Auction duration must be between 1 and 7 days");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Auction duration must be between 1 and 7 days");
         }
     }
 

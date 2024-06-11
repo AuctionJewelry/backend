@@ -28,10 +28,16 @@ public class DeliveryMethodEntity extends BaseEntiy {
     @ManyToOne
     @JoinColumn(name = "staff_id")
     private UserEntity staff;
+
     private String full_name;
+
     private String phone_number;
+
     private String address;
+
+    @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
+
     private boolean valuatingDelivery;
 
 }

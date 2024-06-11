@@ -38,6 +38,5 @@ public class AuctionEntity extends BaseEntiy {
     private UserEntity winner;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 50)
     private AuctionStatus status;
 }

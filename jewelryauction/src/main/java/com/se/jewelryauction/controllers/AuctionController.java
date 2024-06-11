@@ -6,6 +6,7 @@ import com.se.jewelryauction.models.enums.AuctionStatus;
 import com.se.jewelryauction.models.enums.JewelryCondition;
 import com.se.jewelryauction.models.enums.Sex;
 import com.se.jewelryauction.requests.AuctionRequest;
+import com.se.jewelryauction.requests.UpdateTimeAuctionRequest;
 import com.se.jewelryauction.services.IAuctionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,34 +46,31 @@ public class AuctionController {
         return CoreApiResponse.success(auction);
     }
 
-    @PutMapping("/{id}")
-    public CoreApiResponse<AuctionEntity> updateMaterial(
-            @PathVariable Long id,
-            @Valid @RequestBody AuctionStatus status
-    ){
-        AuctionEntity updateStatusAuction = auctionService.updateStatusAuction(id, status);
-        return CoreApiResponse.success(updateStatusAuction, "Update status successfully");
+    @PutMapping("/time/{id}")
+    public CoreApiResponse<AuctionEntity> updateTime(@PathVariable Long id, @RequestBody UpdateTimeAuctionRequest request) {
+        AuctionEntity updatedAuction = auctionService.updateTime(id, request);
+        return CoreApiResponse.success(updatedAuction,"Update auction successfully");
     }
 
     @GetMapping("/category/{categoryId}")
-    public List<AuctionEntity> getAuctionsByCategoryId(@PathVariable Long categoryId) {
-        return auctionService.getAuctionsByCategoryId(categoryId);
+    public CoreApiResponse<List<AuctionEntity>> getAuctionsByCategoryId(@PathVariable Long categoryId) {
+        return CoreApiResponse.success(auctionService.getAuctionsByCategoryId(categoryId));
     }
 
     @GetMapping("/collection/{collectionId}")
-    public List<AuctionEntity> getAuctionsByCollectionId(@PathVariable Long collectionId) {
-        return auctionService.getAuctionsByCollectionId(collectionId);
+    public CoreApiResponse<List<AuctionEntity>> getAuctionsByCollectionId(@PathVariable Long collectionId) {
+        return CoreApiResponse.success(auctionService.getAuctionsByCollectionId(collectionId));
     }
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/myauction")
-    public List<AuctionEntity> getAuctionsBySellerIdAndStatus(
+    public CoreApiResponse<List<AuctionEntity>>getAuctionsBySellerIdAndStatus(
             @RequestParam(required = false) AuctionStatus status) {
-        return auctionService.getMyAuctionsByStatus(status);
+        return CoreApiResponse.success(auctionService.getMyAuctionsByStatus(status));
     }
 
     @GetMapping("/viewauction")
-    public Page<AuctionEntity> viewAuction(
+    public CoreApiResponse<Page<AuctionEntity>> viewAuction(
             @RequestParam(required = false) Long collectionId,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) Float minPrice,
@@ -86,10 +84,10 @@ public class AuctionController {
                 page, limit,
                 Sort.by("created_at").descending()
         );
-        return auctionService.searchAuctions(collectionId, categoryId, minPrice, maxPrice, brandId, jewelryCondition, AuctionStatus.InProgress, sex,pageRequest);
+        return CoreApiResponse.success(auctionService.searchAuctions(collectionId, categoryId, minPrice, maxPrice, brandId, jewelryCondition, AuctionStatus.InProgress, sex,pageRequest));
     }
 
-    @GetMapping("/search")
+    @GetMapping("/admin/search")
     public Page<AuctionEntity> searchAuctions(
             @RequestParam(required = false) Long collectionId,
             @RequestParam(required = false) Long categoryId,
@@ -108,7 +106,7 @@ public class AuctionController {
         return auctionService.searchAuctions(collectionId, categoryId, minPrice, maxPrice, brandId, jewelryCondition, status, sex,pageRequest);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/cancel/{id}")
     public CoreApiResponse<?> cancalAuctions(
             @PathVariable Long id
     ){
