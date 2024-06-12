@@ -3,9 +3,11 @@ package com.se.jewelryauction.components.configurations;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,19 +21,22 @@ public class OpenApiConfig {
         @Value("${app.openapi.dev-url}")
         private String devUrl;
 
+        @Value("${app.openapi.prod-url}")
+        private String prodUrl;
+
 
         @Bean
         public OpenAPI myOpenAPI() {
-                io.swagger.v3.oas.models.servers.Server devServer = new io.swagger.v3.oas.models.servers.Server();
+                Server devServer = new Server();
                 devServer.setUrl(devUrl);
                 devServer.setDescription("Server URL in Development environment");
 
-                io.swagger.v3.oas.models.info.Info info = new Info()
-                        .title("API JewelryAuction")
-                        .version("1.0.0")
-                        .description("This API exposes endpoints to manage demo.");
+                Server prodServer = new Server();
+                prodServer.setUrl(prodUrl);
+                prodServer.setDescription("Server URL in Production environment");
 
-                return new OpenAPI().info(info).servers(List.of(devServer))
+
+                return new OpenAPI().servers(List.of(devServer, prodServer))
                         .addSecurityItem(new SecurityRequirement().
                                 addList("Bearer Authentication"))
                         .components(new Components().addSecuritySchemes
