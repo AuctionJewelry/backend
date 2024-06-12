@@ -1,7 +1,7 @@
 version: '3'
 services:
   jewelryauction-backend:
-    image: phuctth/jewelryauction:v.2
+    image: phuctth/jewelryauction:latest
     ports:
       - "8080:8080"
     environment:
