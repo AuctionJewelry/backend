@@ -12,6 +12,7 @@ import com.se.jewelryauction.requests.UpdateValuatingRequest;
 import com.se.jewelryauction.services.IDeliveryMethodService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,6 +64,13 @@ public class DeliveryMethodController {
     ){
         deliveryMethodService.deleteDeliveryMethod(id);
         return CoreApiResponse.success("Delete delivery method successfully!");
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('STAFF') || hasRole('USER')")
+    public CoreApiResponse<List<DeliveryMethodEntity>> getValuatingByCurrentUser(){
+        List<DeliveryMethodEntity> deliveryMethodEntities = deliveryMethodService.getDeliveryMethodByCurrentUser();
+        return CoreApiResponse.success(deliveryMethodEntities);
     }
 
 }
