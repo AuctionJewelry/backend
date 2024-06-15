@@ -1,0 +1,6 @@
+USE jewelryauction;
+
+INSERT INTO roles (id, name) VALUES (1, 'Admin');
+INSERT INTO roles (id, name) VALUES (2, 'Manager');
+INSERT INTO roles (id, name) VALUES (3, 'Staff');
+INSERT INTO roles (id, name) VALUES (4, 'User');
