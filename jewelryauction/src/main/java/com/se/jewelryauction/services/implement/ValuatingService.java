@@ -1,8 +1,5 @@
 package com.se.jewelryauction.services.implement;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.se.jewelryauction.components.exceptions.AppException;
 import com.se.jewelryauction.components.securities.UserPrincipal;
 import com.se.jewelryauction.models.*;
@@ -11,25 +8,18 @@ import com.se.jewelryauction.models.enums.JewelryStatus;
 import com.se.jewelryauction.models.enums.ValuatingMethod;
 import com.se.jewelryauction.models.enums.ValuatingStatus;
 import com.se.jewelryauction.repositories.*;
-import com.se.jewelryauction.requests.MaterialsRequest;
 import com.se.jewelryauction.services.IValuatingServcie;
-import io.swagger.v3.core.util.Json;
-import io.swagger.v3.oas.models.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 @Service
