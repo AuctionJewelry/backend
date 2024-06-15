@@ -23,5 +23,6 @@ public class CollectionEntity extends BaseEntiy{
     @ManyToOne
     @JoinColumn(name = "brand_id")
 //    @JsonBackReference
+
     private BrandEntity brand;
 }

@@ -1,5 +1,6 @@
 package com.se.jewelryauction.controllers;
 
+import com.google.gson.JsonElement;
 import com.se.jewelryauction.components.apis.CoreApiResponse;
 import com.se.jewelryauction.models.ValuatingEntity;
 import com.se.jewelryauction.requests.CreatingValuatingRequest;
@@ -12,7 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Objects;
 
 import static com.se.jewelryauction.mappers.ValuatingMapper.INSTANCE;
 
@@ -24,11 +28,10 @@ public class ValuatingController {
 
     @PostMapping("")
     public CoreApiResponse<ValuatingEntity> createValuating(
-            @Valid @RequestBody CreatingValuatingRequest creatingValuatingRequest
-    ){
+            @Valid @RequestBody ValuatingRequest valuating
+    ) throws IOException, URISyntaxException {
         ValuatingEntity birdTypeResponse = valuatingService.createValuating(
-                INSTANCE.toModel(creatingValuatingRequest.getRequest()),
-                creatingValuatingRequest.getMaterialsRequest());
+                INSTANCE.toModel(valuating));
         return CoreApiResponse.success(birdTypeResponse,"Insert valuating successfully");
     }
 
@@ -62,7 +65,7 @@ public class ValuatingController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('STAFF') || hasRole('USER')")
     public CoreApiResponse<List<ValuatingEntity>> getValuatingByCurrentUser(){
         List<ValuatingEntity> valuatingEntities = valuatingService.getValuatingByCurrentUser();
         return CoreApiResponse.success(valuatingEntities);

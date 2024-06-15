@@ -1,6 +1,7 @@
 package com.se.jewelryauction.services.implement;
 
 import com.se.jewelryauction.components.exceptions.AppException;
+import com.se.jewelryauction.components.securities.UserPrincipal;
 import com.se.jewelryauction.models.DeliveryMethodEntity;
 import com.se.jewelryauction.models.JewelryEntity;
 import com.se.jewelryauction.models.UserEntity;
@@ -14,9 +15,12 @@ import com.se.jewelryauction.repositories.IValuatingRepository;
 import com.se.jewelryauction.services.IDeliveryMethodService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -106,6 +110,21 @@ public class DeliveryMethodService implements IDeliveryMethodService {
         if(existingDeliverMethod != null){
             deliveryMethodRepository.delete(existingDeliverMethod);
         }
+    }
+
+    @Override
+    public List<DeliveryMethodEntity> getDeliveryMethodByCurrentUser() {
+        List<DeliveryMethodEntity> deliveryMethodEntities = new ArrayList<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
+        if(user.getRole_id().getName().equalsIgnoreCase("staff")){
+            deliveryMethodEntities = deliveryMethodRepository.findByStaffId(user.getId());
+        }
+        else{
+            deliveryMethodEntities = deliveryMethodRepository.findByJewelrySellerId(user);
+        }
+        return deliveryMethodEntities;
     }
 
     private DeliveryMethodEntity saveDeliveryMethodAndTrigger(DeliveryMethodEntity deliveryMethod){
