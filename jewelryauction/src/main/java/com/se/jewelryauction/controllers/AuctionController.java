@@ -82,7 +82,7 @@ public class AuctionController {
             @RequestParam(defaultValue = "20") int limit) {
         PageRequest pageRequest = PageRequest.of(
                 page, limit,
-                Sort.by("created_at").descending()
+                Sort.by("createdAt").descending()
         );
         return CoreApiResponse.success(auctionService.searchAuctions(collectionId, categoryId, minPrice, maxPrice, brandId, jewelryCondition, AuctionStatus.InProgress, sex,pageRequest));
     }
@@ -101,7 +101,7 @@ public class AuctionController {
             @RequestParam(defaultValue = "12") int limit) {
         PageRequest pageRequest = PageRequest.of(
                 page, limit,
-                Sort.by("created_at").descending()
+                Sort.by("createdAt").descending()
         );
         return auctionService.searchAuctions(collectionId, categoryId, minPrice, maxPrice, brandId, jewelryCondition, status, sex,pageRequest);
     }

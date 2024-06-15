@@ -42,12 +42,13 @@ public class BiddingService implements IBiddingService {
             if (bidRequest.getBidAmount() > minBidAmount) {
                 createBidding(auction, user, minBidAmount);
 
-                float remainingAmount = bidRequest.getBidAmount() - minBidAmount;
-                createAutoBidding(auction, user, remainingAmount);
+                //float remainingAmount = bidRequest.getBidAmount() - minBidAmount;
+                createAutoBidding(auction, user, bidRequest.getBidAmount());
             } else {
                 createBidding(auction, user, bidRequest.getBidAmount());
             }
         }
+
     }
 
 
