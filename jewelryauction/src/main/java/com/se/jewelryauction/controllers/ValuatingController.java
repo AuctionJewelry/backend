@@ -1,10 +1,8 @@
 package com.se.jewelryauction.controllers;
 
-import com.google.gson.JsonElement;
 import com.se.jewelryauction.components.apis.CoreApiResponse;
 import com.se.jewelryauction.models.ValuatingEntity;
-import com.se.jewelryauction.requests.CreatingValuatingRequest;
-import com.se.jewelryauction.requests.MaterialsRequest;
+
 import com.se.jewelryauction.requests.UpdateValuatingRequest;
 import com.se.jewelryauction.requests.ValuatingRequest;
 import com.se.jewelryauction.services.IValuatingServcie;
