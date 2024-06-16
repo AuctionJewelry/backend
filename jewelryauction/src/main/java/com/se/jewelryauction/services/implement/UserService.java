@@ -106,6 +106,7 @@ public class UserService implements IUserService {
                 .refreshToken(refreshToken)
                 .userId(userPrincipal.getId())
                 .fullName(userPrincipal.getUsername())
+                .roleName(userPrincipal.getUser().getRole_id().getName())
                 .build();
     }
 
