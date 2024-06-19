@@ -24,8 +24,8 @@ spring:
     time-zone: Asia/Ho_Chi_Minh
 app:
   fe:
-    verify_url: ${VERIFY_URL:http://localhost:8080/api/v1/user/verify}
-    forgot_password_url: ${FORGOT_PASSWORD_URL:http://localhost:8080/api/v1/user/setpassword}
+    verify_url: ${VERIFY_URL:http://apijewelryauction.techx.id.vn:8081/api/v1/user/verify}
+    forgot_password_url: ${FORGOT_PASSWORD_URL:http://apijewelryauction.techx.id.vn:8081/api/v1/user/setpassword}
   cors:
     allowedOrigins: http://localhost:4176,http://localhost:4200,http://localhost:4201,http://localhost:${SERVER_PORT:8080},https://167.71.212.203:${SERVER_PORT:8080},https://167.71.212.203,http://167.71.212.203:${SERVER_PORT:8080},http://167.71.212.203,http://apijewelryauction.techx.id.vn:8081,http://jewelryauction.techx.id.vn,http://adminjewelryauction.techx.id.vn
   api:
