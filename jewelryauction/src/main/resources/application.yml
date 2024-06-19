@@ -27,7 +27,7 @@ app:
     verify_url: ${VERIFY_URL:http://localhost:8080/api/v1/user/verify}
     forgot_password_url: ${FORGOT_PASSWORD_URL:http://localhost:8080/api/v1/user/setpassword}
   cors:
-    allowedOrigins: http://localhost:4176,http://localhost:4200,http://localhost:4201,http://localhost:${SERVER_PORT:8080},https://167.71.212.203:${SERVER_PORT:8080},https://167.71.212.203,http://167.71.212.203:${SERVER_PORT:8080},http://167.71.212.203,https://apijewelryauction.techx.id.vn,https://jewelryauction.techx.id.vn,https://adminjewelryauction.techx.id.vn
+    allowedOrigins: http://localhost:4176,http://localhost:4200,http://localhost:4201,http://localhost:${SERVER_PORT:8080},https://167.71.212.203:${SERVER_PORT:8080},https://167.71.212.203,http://167.71.212.203:${SERVER_PORT:8080},http://167.71.212.203,https://apijewelryauction.techx.id.vn:8081,https://jewelryauction.techx.id.vn,https://adminjewelryauction.techx.id.vn
   api:
     version:
       v1: /api/v1
