@@ -32,7 +32,7 @@ public class BiddingSchedule {
             if (auction.getStatus() == AuctionStatus.InProgress) {
                 List<AutoBiddingEntity> autoBiddings = autoBiddingRepository.findByAuctionId(auction.getId());
                 for (AutoBiddingEntity autoBid : autoBiddings) {
-                    if (auction.getCurrentPrice() < autoBid.getMaxBid()) {
+                    if (auction.getCurrentPrice() < autoBid.getMaxBid() && !auction.getWinner().getId().equals(autoBid.getCustomer().getId())) {
                         placeBid(auction, autoBid);
                         break;
                     }
@@ -40,6 +40,7 @@ public class BiddingSchedule {
             }
         }
     }
+
 
     private void placeBid(AuctionEntity auction, AutoBiddingEntity autoBid) {
         BiddingEntity newBid = new BiddingEntity();
@@ -50,7 +51,9 @@ public class BiddingSchedule {
         newBid.setAutoBid(true);
         biddingRepository.save(newBid);
 
-        auction.setCurrentPrice(newBid.getBidAmount());
+        auction.setCurrentPrice(auction.getCurrentPrice() + auction.getStep());
+        auction.setWinner(autoBid.getCustomer());
+        auction.setTotalBids(auction.getTotalBids()+1);
         auctionRepository.save(auction);
     }
 }

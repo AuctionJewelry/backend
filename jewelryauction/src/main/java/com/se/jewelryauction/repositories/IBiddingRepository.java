@@ -1,5 +1,7 @@
 package com.se.jewelryauction.repositories;
 
+import com.se.jewelryauction.models.AuctionEntity;
+import com.se.jewelryauction.models.AutoBiddingEntity;
 import com.se.jewelryauction.models.BiddingEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -14,6 +16,8 @@ import java.util.List;
 public interface IBiddingRepository extends JpaRepository<BiddingEntity, Long> {
     @Query("SELECT b FROM BiddingEntity b WHERE b.auction.id = :auctionId")
     List<BiddingEntity> findByAuctionId(@Param("auctionId") long auctionId);
+
+
 
 
 }

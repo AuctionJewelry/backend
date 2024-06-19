@@ -34,21 +34,26 @@ public class BiddingService implements IBiddingService {
         AuctionEntity auction = auctionRepository.findById(bidRequest.getAuctionId())
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Auction not found with ID: " + bidRequest.getAuctionId()));
 
-        if (auction.getWinner() != null && auction.getWinner().getId().equals(user.getId())) {
-            createAutoBidding(auction, user, bidRequest.getBidAmount());
-        } else {
-            float minBidAmount = auction.getCurrentPrice() + auction.getStep();
+        AutoBiddingEntity highestAutoBid = autoBiddingRepository.findTop(auction);
 
-            if (bidRequest.getBidAmount() > minBidAmount) {
-                createBidding(auction, user, minBidAmount);
-
-                //float remainingAmount = bidRequest.getBidAmount() - minBidAmount;
+        if (highestAutoBid != null && bidRequest.getBidAmount() == highestAutoBid.getMaxBid()) {
+            createBidding(auction, highestAutoBid.getCustomer(), highestAutoBid.getMaxBid());
+        }else {
+            if (auction.getWinner() != null && auction.getWinner().getId().equals(user.getId())) {
                 createAutoBidding(auction, user, bidRequest.getBidAmount());
             } else {
-                createBidding(auction, user, bidRequest.getBidAmount());
+                float minBidAmount = auction.getCurrentPrice() + auction.getStep();
+
+                if (bidRequest.getBidAmount() > minBidAmount) {
+                    createBidding(auction, user, minBidAmount);
+
+                    //float remainingAmount = bidRequest.getBidAmount() - minBidAmount;
+                    createAutoBidding(auction, user, bidRequest.getBidAmount());
+                } else {
+                    createBidding(auction, user, bidRequest.getBidAmount());
+                }
             }
         }
-
     }
 
 
