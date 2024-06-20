@@ -3,16 +3,18 @@ package com.se.jewelryauction.services.implement;
 import com.se.jewelryauction.components.exceptions.AppException;
 import com.se.jewelryauction.components.exceptions.DataNotFoundException;
 import com.se.jewelryauction.components.securities.UserPrincipal;
-import com.se.jewelryauction.models.AuctionEntity;
-import com.se.jewelryauction.models.JewelryEntity;
-import com.se.jewelryauction.models.UserEntity;
+import com.se.jewelryauction.models.*;
 import com.se.jewelryauction.models.enums.AuctionStatus;
 import com.se.jewelryauction.models.enums.JewelryCondition;
 import com.se.jewelryauction.models.enums.JewelryStatus;
 import com.se.jewelryauction.models.enums.Sex;
 import com.se.jewelryauction.repositories.IAuctionRepository;
+import com.se.jewelryauction.repositories.IAutoBiddingRepository;
+import com.se.jewelryauction.repositories.IBiddingRepository;
 import com.se.jewelryauction.repositories.IJewelryRepository;
 import com.se.jewelryauction.requests.UpdateTimeAuctionRequest;
+import com.se.jewelryauction.responses.AuctionResponse;
+import com.se.jewelryauction.responses.ListBidForAuction;
 import com.se.jewelryauction.services.IAuctionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,14 +28,18 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class AuctionService implements IAuctionService {
     private final IAuctionRepository auctionRepository;
     private final IJewelryRepository jewelryRepository;
+    private final IBiddingRepository  biddingRepository;
+    private final IAutoBiddingRepository autoBiddingRepository;
 
 
     @Override
@@ -143,6 +149,62 @@ public class AuctionService implements IAuctionService {
         }
     }
 
+    @Override
+    public List<ListBidForAuction> getBidsByAuctionId(Long auctionId) {
+        List<BiddingEntity> biddingEntities = biddingRepository.findByAuctionId(auctionId);
+        List<AutoBiddingEntity> autoBiddingEntities = autoBiddingRepository.findByAuctionId(auctionId);
+
+        List<ListBidForAuction> bids = new ArrayList<>();
+
+        for (BiddingEntity bidding : biddingEntities) {
+            ListBidForAuction dto = new ListBidForAuction();
+            dto.setId(bidding.getId());
+            dto.setAuctionId(bidding.getAuction().getId());
+            dto.setUserName(bidding.getCustomer().getFull_name());
+            dto.setBidAmount(bidding.getBidAmount());
+            dto.setBidTime(bidding.getBidTime());
+            dto.setStatus("BIDDING");
+            bids.add(dto);
+        }
+
+        for (AutoBiddingEntity autoBidding : autoBiddingEntities) {
+            ListBidForAuction dto = new ListBidForAuction();
+            dto.setId(autoBidding.getId());
+            dto.setAuctionId(autoBidding.getAuction().getId());
+            dto.setUserName(autoBidding.getCustomer().getFull_name());
+            dto.setBidAmount(autoBidding.getMaxBid());
+            dto.setBidTime(autoBidding.getBidTime());
+            dto.setStatus("AUTO_BIDDING");
+            bids.add(dto);
+        }
+
+        return bids.stream()
+                .sorted((b1, b2) -> b1.getBidTime().compareTo(b2.getBidTime()))
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<AuctionResponse> getAuctionsByUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
+        List<BiddingEntity> biddingEntities = biddingRepository.findByCustomerId(user.getId());
+
+        return biddingEntities.stream()
+                .map(BiddingEntity::getAuction)
+                .filter(auction -> auction.getStatus() == AuctionStatus.InProgress)
+                .distinct()
+                .map(auction -> {
+                    AuctionResponse dto = new AuctionResponse();
+                    dto.setId(auction.getId());
+                    dto.setJewelryName(auction.getJewelry().getName());
+                    dto.setStartTime(auction.getStartTime());
+                    dto.setEndTime(auction.getEndTime());
+                    dto.setCurrentPrice(auction.getCurrentPrice());
+                    dto.setStatus(auction.getStatus());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
 
     private void validateAuctionDuration(Date startTime, Date endTime) {
         if (startTime.after(endTime)) {
@@ -166,5 +228,6 @@ public class AuctionService implements IAuctionService {
                 .toLocalDateTime();
         return start.isAfter(now.plusMinutes(2));
     }
+
 
 }

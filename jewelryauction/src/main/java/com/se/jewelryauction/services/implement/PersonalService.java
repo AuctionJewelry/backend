@@ -5,8 +5,11 @@ import com.se.jewelryauction.components.exceptions.AppException;
 import com.se.jewelryauction.components.securities.UserPrincipal;
 import com.se.jewelryauction.mappers.UserMapper;
 import com.se.jewelryauction.models.UserEntity;
+import com.se.jewelryauction.models.WalletEntity;
 import com.se.jewelryauction.repositories.IUserRepository;
+import com.se.jewelryauction.repositories.IWalletRepository;
 import com.se.jewelryauction.requests.PersonalUpdateRequest;
+import com.se.jewelryauction.responses.UserMeResponse;
 import com.se.jewelryauction.services.IPersonalService;
 import com.se.jewelryauction.utils.UploadImagesUtils;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +26,25 @@ import java.io.IOException;
 public class PersonalService implements IPersonalService {
     private final IUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final IWalletRepository walletRepository;
     @Override
-    public UserEntity getPersonalInformation() {
+    public UserMeResponse getPersonalInformation() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         UserEntity user = userPrincipal.getUser();
-        return user;
+
+        // Find the wallet information for the user
+        WalletEntity wallet = walletRepository.findByUser(user);
+
+        UserMeResponse response = new UserMeResponse();
+        response.setUser(user);
+        if (wallet != null) {
+            response.setMoney(wallet.getMoney());
+        } else {
+            response.setMoney(0); // Default to 0 if no wallet found
+        }
+
+        return response;
     }
 
     @Override
@@ -57,8 +73,9 @@ public class PersonalService implements IPersonalService {
 
     @Override
     public UserEntity uploadAvatar(MultipartFile imageFile) throws IOException {
-        UserEntity user = getPersonalInformation();
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
         user.setImageUrl(UploadImagesUtils.storeFile(imageFile, ImageContants.USER_IMAGE_PATH));
         return userRepository.save(user);
     }

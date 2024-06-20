@@ -3,6 +3,7 @@ package com.se.jewelryauction.controllers;
 import com.se.jewelryauction.components.apis.CoreApiResponse;
 import com.se.jewelryauction.models.UserEntity;
 import com.se.jewelryauction.requests.PersonalUpdateRequest;
+import com.se.jewelryauction.responses.UserMeResponse;
 import com.se.jewelryauction.services.IPersonalService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ public class PersonalController {
     private final IPersonalService personalService;
 
     @GetMapping("/me")
-    public CoreApiResponse<UserEntity> getCurrentUser() {
+    public CoreApiResponse<UserMeResponse> getCurrentUser() {
         return CoreApiResponse.success(personalService.getPersonalInformation());
     }
 

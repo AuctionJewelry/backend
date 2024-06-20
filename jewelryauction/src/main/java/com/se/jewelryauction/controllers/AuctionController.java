@@ -7,6 +7,8 @@ import com.se.jewelryauction.models.enums.JewelryCondition;
 import com.se.jewelryauction.models.enums.Sex;
 import com.se.jewelryauction.requests.AuctionRequest;
 import com.se.jewelryauction.requests.UpdateTimeAuctionRequest;
+import com.se.jewelryauction.responses.AuctionResponse;
+import com.se.jewelryauction.responses.ListBidForAuction;
 import com.se.jewelryauction.services.IAuctionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -112,6 +114,16 @@ public class AuctionController {
     ){
         auctionService.cancelAuction(id);
         return CoreApiResponse.success("Cancel auction successfully");
+    }
+
+    @GetMapping("/bids/{auctionId}")
+    public CoreApiResponse<List<ListBidForAuction>> getBidsByAuctionId(@PathVariable Long auctionId) {
+        return CoreApiResponse.success(auctionService.getBidsByAuctionId(auctionId)) ;
+    }
+
+    @GetMapping("/join/user")
+    public CoreApiResponse<List<AuctionResponse>>getAuctionsByUserId() {
+        return CoreApiResponse.success(auctionService.getAuctionsByUserId());
     }
 
 }

@@ -18,6 +18,8 @@ public interface IBiddingRepository extends JpaRepository<BiddingEntity, Long> {
     List<BiddingEntity> findByAuctionId(@Param("auctionId") long auctionId);
 
 
+    List<BiddingEntity> findByCustomerId(Long customerId);
+
 
 
 }

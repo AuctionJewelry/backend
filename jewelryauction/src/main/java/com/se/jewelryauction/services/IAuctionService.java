@@ -5,6 +5,8 @@ import com.se.jewelryauction.models.enums.AuctionStatus;
 import com.se.jewelryauction.models.enums.JewelryCondition;
 import com.se.jewelryauction.models.enums.Sex;
 import com.se.jewelryauction.requests.UpdateTimeAuctionRequest;
+import com.se.jewelryauction.responses.AuctionResponse;
+import com.se.jewelryauction.responses.ListBidForAuction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -28,4 +30,8 @@ public interface IAuctionService {
     void cancelAuction(long id);
 
     AuctionEntity updateTime(Long auctionId, UpdateTimeAuctionRequest request);
+
+
+    List<AuctionResponse> getAuctionsByUserId();
+    List<ListBidForAuction> getBidsByAuctionId(Long auctionId);
 }
