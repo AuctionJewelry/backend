@@ -36,18 +36,27 @@ public class BiddingService implements IBiddingService {
 
         AutoBiddingEntity highestAutoBid = autoBiddingRepository.findTop(auction);
 
-        if (highestAutoBid != null && bidRequest.getBidAmount() == highestAutoBid.getMaxBid()) {
-            createBidding(auction, highestAutoBid.getCustomer(), highestAutoBid.getMaxBid());
-        }else {
+        float minBidAmount = auction.getCurrentPrice() + auction.getStep();
+
+        if (highestAutoBid != null && highestAutoBid.getMaxBid() > bidRequest.getBidAmount()) {
+            // Tạo giá đấu với mức giá của người A
+            createBidding(auction, user, bidRequest.getBidAmount());
+
+            // Tạo giá đấu tự động với mức giá của người B
+            createBidding(auction, highestAutoBid.getCustomer(), bidRequest.getBidAmount() + auction.getStep());
+
+            // Cập nhật giá hiện tại và người thắng cuộc
+            auction.setCurrentPrice(bidRequest.getBidAmount() + auction.getStep());
+            auction.setWinner(highestAutoBid.getCustomer());
+            auctionRepository.save(auction);
+        } else {
             if (auction.getWinner() != null && auction.getWinner().getId().equals(user.getId())) {
                 createAutoBidding(auction, user, bidRequest.getBidAmount());
             } else {
-                float minBidAmount = auction.getCurrentPrice() + auction.getStep();
-
                 if (bidRequest.getBidAmount() > minBidAmount) {
                     createBidding(auction, user, minBidAmount);
 
-                    //float remainingAmount = bidRequest.getBidAmount() - minBidAmount;
+                    // Tạo giá đấu tự động nếu cần thiết
                     createAutoBidding(auction, user, bidRequest.getBidAmount());
                 } else {
                     createBidding(auction, user, bidRequest.getBidAmount());
@@ -55,6 +64,7 @@ public class BiddingService implements IBiddingService {
             }
         }
     }
+
 
 
 

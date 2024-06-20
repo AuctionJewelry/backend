@@ -41,7 +41,6 @@ public class BiddingSchedule {
         }
     }
 
-
     private void placeBid(AuctionEntity auction, AutoBiddingEntity autoBid) {
         BiddingEntity newBid = new BiddingEntity();
         newBid.setAuction(auction);
@@ -53,7 +52,7 @@ public class BiddingSchedule {
 
         auction.setCurrentPrice(auction.getCurrentPrice() + auction.getStep());
         auction.setWinner(autoBid.getCustomer());
-        auction.setTotalBids(auction.getTotalBids()+1);
+        auction.setTotalBids(auction.getTotalBids() + 1);
         auctionRepository.save(auction);
     }
 }
