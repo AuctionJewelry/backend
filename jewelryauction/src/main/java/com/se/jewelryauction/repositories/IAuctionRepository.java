@@ -1,6 +1,7 @@
 package com.se.jewelryauction.repositories;
 
 import com.se.jewelryauction.models.AuctionEntity;
+import com.se.jewelryauction.models.UserEntity;
 import com.se.jewelryauction.models.enums.AuctionStatus;
 import com.se.jewelryauction.models.enums.JewelryCondition;
 import com.se.jewelryauction.models.enums.Sex;
@@ -54,4 +55,6 @@ public interface IAuctionRepository extends JpaRepository<AuctionEntity, Long> {
 
     @Query("SELECT a FROM AuctionEntity a WHERE a.jewelry.id = :jewelryId AND a.status NOT IN ('FAIL', 'CANCEL')")
     List<AuctionEntity> findActiveAuctionsByJewelryId(Long jewelryId);
+    List<AuctionEntity> findByWinnerAndStatus(UserEntity winner, AuctionStatus status);
+
 }

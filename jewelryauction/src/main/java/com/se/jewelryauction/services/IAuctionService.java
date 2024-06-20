@@ -34,4 +34,6 @@ public interface IAuctionService {
 
     List<AuctionResponse> getAuctionsByUserId();
     List<ListBidForAuction> getBidsByAuctionId(Long auctionId);
+
+    List<AuctionEntity> getAuctionsWin();
 }

@@ -206,6 +206,14 @@ public class AuctionService implements IAuctionService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<AuctionEntity> getAuctionsWin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
+        return auctionRepository.findByWinnerAndStatus(user, AuctionStatus.Completed);
+    }
+
     private void validateAuctionDuration(Date startTime, Date endTime) {
         if (startTime.after(endTime)) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Start time cannot be after end time");

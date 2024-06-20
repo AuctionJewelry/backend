@@ -48,6 +48,7 @@ public class AuctionController {
         return CoreApiResponse.success(auction);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PutMapping("/time/{id}")
     public CoreApiResponse<AuctionEntity> updateTime(@PathVariable Long id, @RequestBody UpdateTimeAuctionRequest request) {
         AuctionEntity updatedAuction = auctionService.updateTime(id, request);
@@ -121,9 +122,15 @@ public class AuctionController {
         return CoreApiResponse.success(auctionService.getBidsByAuctionId(auctionId)) ;
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/join/user")
     public CoreApiResponse<List<AuctionResponse>>getAuctionsByUserId() {
         return CoreApiResponse.success(auctionService.getAuctionsByUserId());
+    }
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/win")
+    public CoreApiResponse<List<AuctionEntity>> getAuctionWin() {
+        return CoreApiResponse.success(auctionService.getAuctionsWin());
     }
 
 }
