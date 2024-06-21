@@ -23,13 +23,16 @@ public class AccountService implements IAccountService {
 
     @Override
     public UserEntity createAccountStaff(UserEntity user) {
-
         user.setEmail_verified(true);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setImageUrl(ImageContants.DEFAULT_AVATAR);
         user.setIs_active(true);
 
-       return userRepository.save(user);
+        RoleEntity role = roleRepository.findById(3L).orElseThrow(() -> new RuntimeException("Role not found"));
+
+        user.setRole_id(role);
+
+        return userRepository.save(user);
     }
 
     @Override
@@ -38,6 +41,9 @@ public class AccountService implements IAccountService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setImageUrl(ImageContants.DEFAULT_AVATAR);
         user.setIs_active(true);
+        RoleEntity role = roleRepository.findById(2L).orElseThrow(() -> new RuntimeException("Role not found"));
+
+        user.setRole_id(role);
 
         return userRepository.save(user);
     }
@@ -85,5 +91,11 @@ public class AccountService implements IAccountService {
                         -> new DataNotFoundException("User", "id", id));
         existingUser.setIs_active(false);
         return userRepository.save(existingUser);
+    }
+
+    @Override
+    public List<UserEntity> getStaff() {
+        Long fixedRoleId = 3L;
+        return userRepository.findByRoleId_Id(fixedRoleId);
     }
 }

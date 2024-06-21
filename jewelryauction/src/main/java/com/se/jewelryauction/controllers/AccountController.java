@@ -3,16 +3,13 @@ package com.se.jewelryauction.controllers;
 import com.se.jewelryauction.components.apis.CoreApiResponse;
 import com.se.jewelryauction.models.AuctionEntity;
 import com.se.jewelryauction.models.UserEntity;
-import com.se.jewelryauction.requests.AuctionRequest;
 import com.se.jewelryauction.requests.CreateAccountRequest;
 import com.se.jewelryauction.services.IAccountService;
-import com.se.jewelryauction.services.IAuctionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.se.jewelryauction.mappers.UserMapper.INSTANCE;
 
@@ -38,4 +35,9 @@ public class AccountController {
 //        return CoreApiResponse.success("Insert auction successfully");
 //    }
 
+    @GetMapping("/users/staff")
+    public CoreApiResponse<List<UserEntity>> getUsersByRoleId() {
+        List<UserEntity> users = accountService.getStaff();
+        return CoreApiResponse.success(users);
+    }
 }

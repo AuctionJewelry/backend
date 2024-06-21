@@ -16,4 +16,6 @@ public interface IAccountService {
     List<UserEntity> getAllUser();
 
     UserEntity banUser(Long id);
+
+    List<UserEntity> getStaff();
 }
