@@ -5,6 +5,8 @@ import com.se.jewelryauction.models.ValuatingEntity;
 
 import com.se.jewelryauction.requests.UpdateValuatingRequest;
 import com.se.jewelryauction.requests.ValuatingRequest;
+import com.se.jewelryauction.requests.ValuatingStatusUpdateRequest;
+import com.se.jewelryauction.responses.ValuatingResponse;
 import com.se.jewelryauction.services.IValuatingServcie;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +27,10 @@ public class ValuatingController {
     private final IValuatingServcie valuatingService;
 
     @PostMapping("")
-    public CoreApiResponse<ValuatingEntity> createValuating(
+    public CoreApiResponse<ValuatingResponse> createValuating(
             @Valid @RequestBody ValuatingRequest valuating
     ) throws IOException, URISyntaxException {
-        ValuatingEntity birdTypeResponse = valuatingService.createValuating(
+        ValuatingResponse birdTypeResponse = valuatingService.createValuating(
                 INSTANCE.toModel(valuating));
         return CoreApiResponse.success(birdTypeResponse,"Insert valuating successfully");
     }
@@ -51,6 +53,15 @@ public class ValuatingController {
             @Valid @RequestBody UpdateValuatingRequest request
     ){
         ValuatingEntity updateBrand = valuatingService.updateValuating(id, INSTANCE.toModel(request));
+        return CoreApiResponse.success(updateBrand, "Update valuating successfully");
+    }
+
+    @PutMapping("/{id}/status")
+    public CoreApiResponse<ValuatingEntity> updateStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody ValuatingStatusUpdateRequest request
+            ){
+        ValuatingEntity updateBrand = valuatingService.updateStatusValuating(id, request.status);
         return CoreApiResponse.success(updateBrand, "Update valuating successfully");
     }
 

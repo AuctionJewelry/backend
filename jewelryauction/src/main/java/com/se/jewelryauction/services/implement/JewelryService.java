@@ -32,6 +32,7 @@ public class JewelryService implements IJewelryService {
     private final ICollectionRepository collectionRepository;
     private final IMaterialRepository materialRepository;
     private final JewelryMapper jewelryMapper;
+    private final IJewelryMaterialRepository jewelryMaterialRepository;
     @Override
     public JewelryEntity createJewelry(JewelryEntity jewelry, MultipartFile imageFile, List<MultipartFile> images) throws IOException {
         CategoryEntity existingCategory = categoryRepository
@@ -88,13 +89,18 @@ public class JewelryService implements IJewelryService {
         List<JewelryMaterialEntity> jewelryMaterialList = jewelry.getJewelryMaterials();
         List<JewelryMaterialEntity> newJewelryMaterialList = new ArrayList<>();
         for (JewelryMaterialEntity material : jewelryMaterialList) {
-            JewelryMaterialEntity jewelryMaterial = new JewelryMaterialEntity();
-            jewelryMaterial.setJewelry(jewelry);
-            jewelryMaterial.setWeight(material.getWeight());
             MaterialEntity materialEntity = materialRepository.findById(material.getMaterial().getId())
                     .orElseThrow(() -> new DataNotFoundException("Category", "id", material.getMaterial().getId()));
-            jewelryMaterial.setMaterial(materialEntity);
-            newJewelryMaterialList.add(jewelryMaterial);
+            JewelryMaterialEntity jewelryMaterialEntity = jewelryMaterialRepository.findByJewelryAndMaterial(jewelry, materialEntity);
+            if(jewelryMaterialEntity != null){
+                jewelryMaterialEntity.setWeight(jewelryMaterialEntity.getWeight() + material.getWeight());
+            }
+            else{
+                jewelryMaterialEntity.setWeight(material.getWeight());
+                jewelryMaterialEntity.setJewelry(jewelry);
+                jewelryMaterialEntity.setMaterial(materialEntity);
+            }
+            newJewelryMaterialList.add(jewelryMaterialEntity);
         }
         jewelry.setJewelryMaterials(newJewelryMaterialList);
         JewelryEntity savedJewelry = jewelryRepository.save(jewelry);

@@ -2,12 +2,15 @@ package com.se.jewelryauction.services.implement;
 
 import com.se.jewelryauction.components.exceptions.AppException;
 import com.se.jewelryauction.components.securities.UserPrincipal;
+import com.se.jewelryauction.mappers.ValuatingMapper;
 import com.se.jewelryauction.models.*;
 import com.se.jewelryauction.models.enums.DeliveryStatus;
 import com.se.jewelryauction.models.enums.JewelryStatus;
 import com.se.jewelryauction.models.enums.ValuatingMethod;
 import com.se.jewelryauction.models.enums.ValuatingStatus;
 import com.se.jewelryauction.repositories.*;
+import com.se.jewelryauction.responses.ValuatingPerMaterialResponse;
+import com.se.jewelryauction.responses.ValuatingResponse;
 import com.se.jewelryauction.services.IValuatingServcie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,25 +36,20 @@ public class ValuatingService implements IValuatingServcie {
     private final IMaterialRepository materialRepository;
 
     @Override
-    public ValuatingEntity createValuating(ValuatingEntity valuating) throws IOException, URISyntaxException {
+    public ValuatingResponse createValuating(ValuatingEntity valuating) throws IOException, URISyntaxException {
 
         JewelryEntity jewelry = jewelryRepository.findById(valuating.getJewelry().getId())
                 .orElseThrow(()
                         -> new AppException(HttpStatus.BAD_REQUEST, "Jewelry doesn't exist!"));
+        List<ValuatingPerMaterialResponse> perMaterialResponses = new ArrayList<>();
         if(valuating.isOnline()){
             float totalPrice = 0;
             List<JewelryMaterialEntity> jewelryMaterialEntities = jewelryMaterialRepository.findByJewelryId(jewelry.getId());
             for(var jerMat : jewelryMaterialEntities ){
-//                float quantity = 0;
-//                for(var material: list){
-//                    if(jerMat.getMaterial().getId() == material.getMaterialID()){
-//                        quantity = material.getPrice();
-//                    }
-//                }
-//                if (quantity == 0){
-//                    throw new AppException(HttpStatus.BAD_REQUEST, "Can not find price of Meterial: " + jerMat.getMaterial().getName());
-//                }
-                totalPrice += jerMat.getWeight() * this.getCurrentPrice(jerMat.getMaterial().getName());
+                ValuatingPerMaterialResponse materialResponse =
+                        new ValuatingPerMaterialResponse(jerMat.getMaterial(), jerMat.getWeight(), this.getCurrentPrice(jerMat.getMaterial().getName()));
+                perMaterialResponses.add(materialResponse);
+                totalPrice += materialResponse.getSum();
             }
             valuating.setJewelry(jewelry);
             valuating.setValuation_value(totalPrice);
@@ -65,7 +63,9 @@ public class ValuatingService implements IValuatingServcie {
             valuating.setStatus(ValuatingStatus.REQUEST);
         }
         valuating.setStaff(null);
-        return  this.saveValuatingAndUpdateJewelry(valuating);
+        ValuatingResponse valuatingResponse = ValuatingMapper.INSTANCE.toResponse(this.saveValuatingAndUpdateJewelry(valuating));
+        valuatingResponse.setMaterialPriceResponse(perMaterialResponses);
+        return valuatingResponse;
 
     }
 
@@ -87,10 +87,17 @@ public class ValuatingService implements IValuatingServcie {
         ValuatingEntity existingValuating = this.getValuatingById(valuatingId);
         if(!existingValuating.isOnline()){
             UserEntity user;
-            if (valuating.getStaff().getId() != 0){
-                user = userRepository.findById(valuating.getStaff().getId())
-                        .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "User doesn't exist"));
-                existingValuating.setStaff(user);
+            if(valuating.getStaff() != null){
+                if (valuating.getStaff().getId() != 0){
+                    user = userRepository.findById(valuating.getStaff().getId())
+                            .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "User doesn't exist"));
+                    if(user.getRole_id().getId() == 3){
+                        existingValuating.setStaff(user);
+                    }
+                    else{
+                        throw new AppException(HttpStatus.BAD_REQUEST, "User is not a staff!");
+                    }
+                }
             }
 
             existingValuating.setAddress(
@@ -130,6 +137,13 @@ public class ValuatingService implements IValuatingServcie {
         }
         return this.saveValuatingAndUpdateJewelry(existingValuating);
 
+    }
+
+    @Override
+    public ValuatingEntity updateStatusValuating(long valuatingId, ValuatingStatus valuatingStatus) {
+        ValuatingEntity valuatingEntity = new ValuatingEntity();
+        valuatingEntity.setStatus(valuatingStatus);
+        return this.updateValuating(valuatingId, valuatingEntity);
     }
 
     @Override
