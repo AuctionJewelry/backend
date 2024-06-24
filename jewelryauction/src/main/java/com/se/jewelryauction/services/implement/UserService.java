@@ -95,6 +95,9 @@ public class UserService implements IUserService {
             sendVerifyMail(userPrincipal.getUser());
             throw new AppException(HttpStatus.BAD_REQUEST,"Email not verified");
         }
+        if (!userPrincipal.getUser().getIs_active()) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Account is deactivated");
+        }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

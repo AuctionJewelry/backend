@@ -2,10 +2,13 @@ package com.se.jewelryauction.services.implement;
 
 import com.se.jewelryauction.components.constants.ImageContants;
 import com.se.jewelryauction.components.exceptions.DataNotFoundException;
+import com.se.jewelryauction.mappers.JewelryMapper;
+import com.se.jewelryauction.mappers.UserMapper;
 import com.se.jewelryauction.models.RoleEntity;
 import com.se.jewelryauction.models.UserEntity;
 import com.se.jewelryauction.repositories.IRoleRepository;
 import com.se.jewelryauction.repositories.IUserRepository;
+import com.se.jewelryauction.requests.PersonalUpdateRequest;
 import com.se.jewelryauction.requests.UpdateUserRequest;
 import com.se.jewelryauction.services.IAccountService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,9 @@ public class AccountService implements IAccountService {
     private final PasswordEncoder passwordEncoder;
     private final IUserRepository userRepository;
     private final IRoleRepository roleRepository;
+    private final UserMapper userMapper;
+
+
 
 
     @Override
@@ -59,20 +65,19 @@ public class AccountService implements IAccountService {
     public UserEntity updateUser(Long id, UpdateUserRequest update) {
         UserEntity existingUser = userRepository
                 .findById(id)
-                .orElseThrow(()
-                        -> new DataNotFoundException("User", "id", id));
+                .orElseThrow(() -> new DataNotFoundException("User", "id", id));
 
-        if(update.getRoleId() != null && Long.parseLong(update.getRoleId()) != existingUser.getRole_id().getId()){
+        userMapper.updateUserFromRequest(update, existingUser);
+
+        if (update.getRole_id() != null && !update.getRole_id().equals(existingUser.getRole_id().getId().toString())) {
             RoleEntity role = roleRepository
-                    .findById(Long.parseLong(update.getRoleId()))
-                    .orElseThrow(()
-                            -> new DataNotFoundException("Role", "id", Long.parseLong(update.getRoleId())));
-
+                    .findById(Long.parseLong(update.getRole_id()))
+                    .orElseThrow(() -> new DataNotFoundException("Role", "id", Long.parseLong(update.getRole_id())));
             existingUser.setRole_id(role);
         }
 
-        if(update.getPassword() != null){
-            update.setPassword(passwordEncoder.encode(update.getPassword()));
+        if (update.getPassword() != null) {
+            existingUser.setPassword(passwordEncoder.encode(update.getPassword()));
         }
 
         return userRepository.save(existingUser);
@@ -97,5 +102,16 @@ public class AccountService implements IAccountService {
     public List<UserEntity> getStaff() {
         Long fixedRoleId = 3L;
         return userRepository.findByRoleId_Id(fixedRoleId);
+    }
+
+    @Override
+    public List<UserEntity> getManager() {
+        Long fixedRoleId = 2L;
+        return userRepository.findByRoleId_Id(fixedRoleId);
+    }
+
+    @Override
+    public List<RoleEntity> getAllRoles() {
+        return roleRepository.findAll();
     }
 }

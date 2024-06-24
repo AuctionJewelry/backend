@@ -26,8 +26,6 @@ public class CreateAccountRequest {
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
-    @NotEmpty(message = "Role ID is required")
-    private String role_id;
 
     private String phone_number;
 

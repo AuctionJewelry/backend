@@ -16,14 +16,14 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateUserRequest {
-    private String fullName;
+    private String full_name;
 
     @Email(message = "Invalid email format")
     private String email;
 
     private String password;
 
-    private String roleId;
+    private String role_id;
 
     private String phoneNumber;
 
@@ -31,5 +31,5 @@ public class UpdateUserRequest {
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dob;
+    private LocalDate date_of_birth;
 }
