@@ -14,5 +14,6 @@ public enum ValuatingStatus {
     REQUEST, //Khi 1 nguoi tao request
     PREPARING, //Chuan bi de tham dinh
     VALUATING, //Trong qua trinh tham dinh
-    VALUATED //
+    VALUATED, //
+    REJECTED
 }
