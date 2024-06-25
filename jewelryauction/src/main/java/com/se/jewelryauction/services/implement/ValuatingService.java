@@ -44,6 +44,12 @@ public class ValuatingService implements IValuatingServcie {
         List<ValuatingPerMaterialResponse> perMaterialResponses = new ArrayList<>();
         if(valuating.isOnline()){
             float totalPrice = 0;
+            List<ValuatingEntity> existingValuating = valuatingRepository.findByJewelryId(valuating.getJewelry().getId());
+            for(var valuate: existingValuating){
+                if(valuate.isOnline()){
+                    valuating = valuate;
+                }
+            }
             List<JewelryMaterialEntity> jewelryMaterialEntities = jewelryMaterialRepository.findByJewelryId(jewelry.getId());
             for(var jerMat : jewelryMaterialEntities ){
                 ValuatingPerMaterialResponse materialResponse =
