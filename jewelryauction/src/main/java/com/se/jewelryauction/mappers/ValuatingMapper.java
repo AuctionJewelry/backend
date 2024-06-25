@@ -4,6 +4,7 @@ import com.se.jewelryauction.models.ValuatingEntity;
 import com.se.jewelryauction.requests.CreatingValuatingRequest;
 import com.se.jewelryauction.requests.UpdateValuatingRequest;
 import com.se.jewelryauction.requests.ValuatingRequest;
+import com.se.jewelryauction.responses.ValuatingResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -18,4 +19,6 @@ public interface ValuatingMapper {
 
     @Mapping(source = "staffId", target = "staff.id")
     ValuatingEntity toModel(UpdateValuatingRequest request);
+
+    ValuatingResponse toResponse(ValuatingEntity valuating);
 }
