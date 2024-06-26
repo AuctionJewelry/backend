@@ -23,11 +23,13 @@ public class UpdateUserRequest {
 
     private String password;
 
-    private String role_id;
+    private Long roleId;
 
     private String phoneNumber;
 
     private String address;
+
+    private Boolean is_active;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "yyyy-MM-dd")

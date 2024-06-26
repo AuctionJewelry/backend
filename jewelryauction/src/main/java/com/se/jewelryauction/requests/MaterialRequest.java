@@ -11,4 +11,6 @@ import lombok.*;
 public class MaterialRequest {
     @NotBlank(message = "Material name cannot be empty")
     private String name;
+
+    private String unit;
 }

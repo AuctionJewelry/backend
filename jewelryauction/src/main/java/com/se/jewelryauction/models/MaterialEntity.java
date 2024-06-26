@@ -17,4 +17,6 @@ public class MaterialEntity extends BaseEntiy {
     private Long id;
 
     private String name;
+
+    private String unit;
 }

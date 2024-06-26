@@ -2,6 +2,7 @@ package com.se.jewelryauction.controllers;
 
 import com.se.jewelryauction.components.apis.CoreApiResponse;
 import com.se.jewelryauction.models.JewelryEntity;
+import com.se.jewelryauction.requests.JewelryMaterialRequest;
 import com.se.jewelryauction.requests.JewelryRequest;
 import com.se.jewelryauction.services.IJewelryService;
 import jakarta.validation.Valid;
@@ -51,6 +52,14 @@ public class JewelryController {
     ){
         JewelryEntity updateJewelry= jewelryService.updateJewelry(id, jewelryRequest);
         return CoreApiResponse.success(updateJewelry, "Update jewelry successfully");
+    }
+
+    @PutMapping("/materials/{jewelryId}")
+    public CoreApiResponse<JewelryEntity> updateJewelryMaterials(
+            @PathVariable long jewelryId,
+            @RequestBody List<JewelryMaterialRequest> materialsUpdateRequests) {
+        JewelryEntity updatedJewelry = jewelryService.updateJewelryMaterials(jewelryId, materialsUpdateRequests);
+        return CoreApiResponse.success(updatedJewelry);
     }
 
     @DeleteMapping("/{id}")

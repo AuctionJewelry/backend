@@ -2,6 +2,7 @@ package com.se.jewelryauction.services;
 
 
 import com.se.jewelryauction.models.JewelryEntity;
+import com.se.jewelryauction.requests.JewelryMaterialRequest;
 import com.se.jewelryauction.requests.JewelryRequest;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +18,8 @@ public interface IJewelryService {
     void uploadThumbnail(Long jewelryId, MultipartFile imageFile) throws IOException;
 
     List<JewelryEntity> getJewelryBySellerId();
+
+    JewelryEntity updateJewelryMaterials(long jewelryId, List<JewelryMaterialRequest> materialsUpdateRequests);
 
 
 }

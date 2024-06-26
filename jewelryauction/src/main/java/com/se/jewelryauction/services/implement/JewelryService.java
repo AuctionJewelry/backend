@@ -23,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class JewelryService implements IJewelryService {
@@ -41,14 +43,11 @@ public class JewelryService implements IJewelryService {
                                 "Category", "id", jewelry.getCategory().getId()));
 
         BrandEntity existingBrand = brandRepository
-                .findById(jewelry.getBrand().getId()).orElseThrow(() ->
-                        new DataNotFoundException(
-                                "Brand", "id", jewelry.getBrand().getId()));
+                .findByName(jewelry.getBrand().getName());
 
-        CollectionEntity existingCollection = collectionRepository.
-                findById(jewelry.getCollection().getId()).orElseThrow(() ->
-                new DataNotFoundException(
-                        "Collection", "id", jewelry.getCollection().getId()));
+
+        CollectionEntity existingCollection = collectionRepository
+                .findByName(jewelry.getCollection().getName());
 
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -115,74 +114,64 @@ public class JewelryService implements IJewelryService {
     public JewelryEntity updateJewelry(long jewelryId, JewelryRequest jewelry) {
         JewelryEntity existingJewelry = getJewelryById(jewelryId);
         jewelryMapper.updateJewelryFromRequest(jewelry, existingJewelry);
+
         if (jewelry.getCategory() != null && !existingJewelry.getCategory().getId().equals(jewelry.getCategory())) {
             CategoryEntity existingCategory = categoryRepository
                     .findById(jewelry.getCategory())
-                    .orElseThrow(() ->
-                            new DataNotFoundException(
-                                    "Category", "id", jewelry.getCategory()));
+                    .orElseThrow(() -> new DataNotFoundException("Category", "id", jewelry.getCategory()));
             existingJewelry.setCategory(existingCategory);
         }
 
-        if (jewelry.getBrand() != null && !existingJewelry.getBrand().getId().equals(jewelry.getBrand())) {
+        if (jewelry.getBrand() != null && !existingJewelry.getBrand().getName().equals(jewelry.getBrand())) {
             BrandEntity existingBrand = brandRepository
-                    .findById(jewelry.getBrand())
-                    .orElseThrow(() ->
-                            new DataNotFoundException(
-                                    "Brand", "id", jewelry.getBrand()));
+                    .findByName(jewelry.getBrand());
             existingJewelry.setBrand(existingBrand);
         }
 
-
-        if (jewelry.getCollection() != null && !existingJewelry.getCollection().getId().equals(jewelry.getCollection())) {
-            CollectionEntity existingCollection = collectionRepository.
-                    findById(jewelry.getCollection()).orElseThrow(() ->
-                            new DataNotFoundException(
-                                    "Collection", "id", jewelry.getCollection()));
-
-
+        if (jewelry.getCollection() != null && !existingJewelry.getCollection().getName().equals(jewelry.getCollection())) {
+            CollectionEntity existingCollection = collectionRepository
+                    .findByName(jewelry.getCollection());
             existingJewelry.setCollection(existingCollection);
         }
-        if (jewelry.getMaterials() != null) {
-            boolean materialsChanged = false;
 
-            List<JewelryMaterialRequest> jewelryMaterialRequests = jewelry.getMaterials();
-            List<JewelryMaterialEntity> existingJewelryMaterialList = existingJewelry.getJewelryMaterials();
+        return jewelryRepository.save(existingJewelry);
+    }
 
-            if (jewelryMaterialRequests.size() != existingJewelryMaterialList.size()) {
-                materialsChanged = true;
+
+    @Override
+    public JewelryEntity updateJewelryMaterials(long jewelryId, List<JewelryMaterialRequest> materialsUpdateRequests) {
+        JewelryEntity existingJewelry = getJewelryById(jewelryId);
+
+        // Update existing materials
+        for (JewelryMaterialRequest materialRequest : materialsUpdateRequests) {
+            Long materialId = materialRequest.getIdMaterial();
+            Float weight = materialRequest.getWeight();
+
+            // Check if the material exists in the jewelry's materials list
+            Optional<JewelryMaterialEntity> optionalJewelryMaterial = existingJewelry.getJewelryMaterials().stream()
+                    .filter(jm -> jm.getMaterial().getId().equals(materialId))
+                    .findFirst();
+
+            if (optionalJewelryMaterial.isPresent()) {
+                JewelryMaterialEntity jewelryMaterial = optionalJewelryMaterial.get();
+                jewelryMaterial.setWeight(weight);
             } else {
-                for (int i = 0; i < jewelryMaterialRequests.size(); i++) {
-                    JewelryMaterialRequest newMaterialRequest = jewelryMaterialRequests.get(i);
-                    JewelryMaterialEntity existingMaterial = existingJewelryMaterialList.get(i);
+                // Material not found, add new JewelryMaterialEntity
+                MaterialEntity materialEntity = materialRepository.findById(materialId)
+                        .orElseThrow(() -> new DataNotFoundException("Material", "id", materialId));
 
-                    if (!newMaterialRequest.getIdMaterial().equals(existingMaterial.getMaterial().getId()) ||
-                            !newMaterialRequest.getWeight().equals(existingMaterial.getWeight())) {
-                        materialsChanged = true;
-                        break;
-                    }
-                }
-            }
+                JewelryMaterialEntity newJewelryMaterial = new JewelryMaterialEntity();
+                newJewelryMaterial.setJewelry(existingJewelry);
+                newJewelryMaterial.setMaterial(materialEntity);
+                newJewelryMaterial.setWeight(weight);
 
-            if (materialsChanged) {
-                List<JewelryMaterialEntity> newJewelryMaterialList = new ArrayList<>();
-                for (JewelryMaterialRequest materialRequest : jewelryMaterialRequests) {
-                    JewelryMaterialEntity jewelryMaterial = new JewelryMaterialEntity();
-                    jewelryMaterial.setJewelry(existingJewelry);
-                    jewelryMaterial.setWeight(materialRequest.getWeight());
-
-                    MaterialEntity materialEntity = materialRepository.findById(materialRequest.getIdMaterial())
-                            .orElseThrow(() -> new DataNotFoundException("Category", "id", materialRequest.getIdMaterial()));
-                    jewelryMaterial.setMaterial(materialEntity);
-
-                    newJewelryMaterialList.add(jewelryMaterial);
-                }
-                existingJewelry.setJewelryMaterials(newJewelryMaterialList);
+                existingJewelry.getJewelryMaterials().add(newJewelryMaterial);
             }
         }
 
-        return  jewelryRepository.save(existingJewelry);
+        return jewelryRepository.save(existingJewelry);
     }
+
 
     @Override
     public void uploadThumbnail(Long jewelryId, MultipartFile imageFile) throws IOException {

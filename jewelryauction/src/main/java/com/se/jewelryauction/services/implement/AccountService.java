@@ -69,10 +69,11 @@ public class AccountService implements IAccountService {
 
         userMapper.updateUserFromRequest(update, existingUser);
 
-        if (update.getRole_id() != null && !update.getRole_id().equals(existingUser.getRole_id().getId().toString())) {
+        if (update.getRoleId() != null && !update.getRoleId().equals(existingUser.getRole_id().getId())) {
             RoleEntity role = roleRepository
-                    .findById(Long.parseLong(update.getRole_id()))
-                    .orElseThrow(() -> new DataNotFoundException("Role", "id", Long.parseLong(update.getRole_id())));
+                    .findById(update.getRoleId())
+                    .orElseThrow(() -> new DataNotFoundException("Role", "id", update.getRoleId()));
+
             existingUser.setRole_id(role);
         }
 
