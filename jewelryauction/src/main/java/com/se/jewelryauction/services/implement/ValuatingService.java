@@ -287,7 +287,9 @@ public class ValuatingService implements IValuatingServcie {
                         -> new AppException(HttpStatus.BAD_REQUEST, "There is no Jewelry!"));
         if(valuating.isOnline()){
             if(valuating.getStatus() == ValuatingStatus.VALUATED){
-                jewelry.setStatus(JewelryStatus.ONLINE_VALUATED);
+                if(valuatingRepository.findByJewelryId(jewelry.getId()) == null){
+                    jewelry.setStatus(JewelryStatus.ONLINE_VALUATED);
+                }
             }
         }
         else{
