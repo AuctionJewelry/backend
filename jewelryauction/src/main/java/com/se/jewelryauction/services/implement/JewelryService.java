@@ -41,22 +41,15 @@ public class JewelryService implements IJewelryService {
                                 "Category", "id", jewelry.getCategory().getId()));
 
         BrandEntity existingBrand = brandRepository
-                .findByName(jewelry.getBrand().getName());
-        if (existingBrand == null) {
-            BrandEntity newBrand = new BrandEntity();
-            newBrand.setName(jewelry.getBrand().getName());
-            brandRepository.save(newBrand);
-            existingBrand = newBrand;
-        }
+                .findById(jewelry.getBrand().getId()).orElseThrow(() ->
+                        new DataNotFoundException(
+                                "Brand", "id", jewelry.getBrand().getId()));
+
         CollectionEntity existingCollection = collectionRepository.
-                findByName(jewelry.getCollection().getName());
-        if (existingCollection == null) {
-            CollectionEntity newCollection = new CollectionEntity();
-            newCollection.setName(jewelry.getCollection().getName());
-            newCollection.setBrand(existingBrand);
-            collectionRepository.save(newCollection);
-            existingCollection = newCollection;
-        }
+                findById(jewelry.getCollection().getId()).orElseThrow(() ->
+                new DataNotFoundException(
+                        "Collection", "id", jewelry.getCollection().getId()));
+
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
@@ -131,30 +124,22 @@ public class JewelryService implements IJewelryService {
             existingJewelry.setCategory(existingCategory);
         }
 
-        if (jewelry.getBrand() != null && !existingJewelry.getBrand().getName().equals(jewelry.getBrand())) {
+        if (jewelry.getBrand() != null && !existingJewelry.getBrand().getId().equals(jewelry.getBrand())) {
             BrandEntity existingBrand = brandRepository
-                    .findByName(jewelry.getBrand());
-            if (existingBrand == null) {
-                BrandEntity newBrand = new BrandEntity();
-                newBrand.setName(existingJewelry.getBrand().getName());
-                brandRepository.save(newBrand);
-                existingBrand = newBrand;
-            }
-
+                    .findById(jewelry.getBrand())
+                    .orElseThrow(() ->
+                            new DataNotFoundException(
+                                    "Brand", "id", jewelry.getBrand()));
             existingJewelry.setBrand(existingBrand);
         }
 
 
-        if (jewelry.getCollection() != null && !existingJewelry.getCollection().getName().equals(jewelry.getCollection())) {
-            CollectionEntity existingCollection = collectionRepository
-                    .findByName(jewelry.getCollection());
-            if (existingCollection == null) {
-                CollectionEntity newCollection = new CollectionEntity();
-                newCollection.setName(existingJewelry.getCollection().getName());
-                newCollection.setBrand(existingJewelry.getBrand());
-                collectionRepository.save(newCollection);
-                existingCollection = newCollection;
-            }
+        if (jewelry.getCollection() != null && !existingJewelry.getCollection().getId().equals(jewelry.getCollection())) {
+            CollectionEntity existingCollection = collectionRepository.
+                    findById(jewelry.getCollection()).orElseThrow(() ->
+                            new DataNotFoundException(
+                                    "Collection", "id", jewelry.getCollection()));
+
 
             existingJewelry.setCollection(existingCollection);
         }

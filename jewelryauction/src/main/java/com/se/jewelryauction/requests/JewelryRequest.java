@@ -24,11 +24,11 @@ public class JewelryRequest {
 
     private String sex;
 
-    private String brand;
+    private Long brand;
 
     private String jewelryCondition;
 
-    private String collection;
+    private Long collection;
 
     private List<JewelryMaterialRequest> materials;
 

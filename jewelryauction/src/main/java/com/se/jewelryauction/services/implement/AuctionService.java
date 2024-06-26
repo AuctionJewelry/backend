@@ -154,6 +154,9 @@ public class AuctionService implements IAuctionService {
         List<BiddingEntity> biddingEntities = biddingRepository.findByAuctionId(auctionId);
         List<AutoBiddingEntity> autoBiddingEntities = autoBiddingRepository.findByAuctionId(auctionId);
 
+        AuctionEntity auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This auction is not existed!"));
+
         List<ListBidForAuction> bids = new ArrayList<>();
 
         for (BiddingEntity bidding : biddingEntities) {
@@ -168,20 +171,23 @@ public class AuctionService implements IAuctionService {
         }
 
         for (AutoBiddingEntity autoBidding : autoBiddingEntities) {
-            ListBidForAuction dto = new ListBidForAuction();
-            dto.setId(autoBidding.getId());
-            dto.setAuctionId(autoBidding.getAuction().getId());
-            dto.setUserName(autoBidding.getCustomer().getFull_name());
-            dto.setBidAmount(autoBidding.getMaxBid());
-            dto.setBidTime(autoBidding.getBidTime());
-            dto.setStatus("AUTO_BIDDING");
-            bids.add(dto);
+            if (autoBidding.getMaxBid() < auction.getCurrentPrice()) {
+                ListBidForAuction dto = new ListBidForAuction();
+                dto.setId(autoBidding.getId());
+                dto.setAuctionId(autoBidding.getAuction().getId());
+                dto.setUserName(autoBidding.getCustomer().getFull_name());
+                dto.setBidAmount(autoBidding.getMaxBid());
+                dto.setBidTime(autoBidding.getBidTime());
+                dto.setStatus("AUTO_BIDDING");
+                bids.add(dto);
+            }
         }
 
         return bids.stream()
                 .sorted((b1, b2) -> b1.getBidTime().compareTo(b2.getBidTime()))
                 .collect(Collectors.toList());
     }
+
     @Override
     public List<AuctionResponse> getAuctionsByUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

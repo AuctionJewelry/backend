@@ -14,16 +14,16 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface JewelryMapper {
     JewelryMapper INSTANCE = Mappers.getMapper(JewelryMapper.class);
-    @Mapping(source = "brand", target = "brand.name")
-    @Mapping(source = "collection", target = "collection.name")
+    @Mapping(source = "brand", target = "brand.id")
+    @Mapping(source = "collection", target = "collection.id")
     @Mapping(source = "category",target = "category.id")
     @Mapping(source = "materials", target = "jewelryMaterials")
     JewelryEntity toModel(JewelryRequest request);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "category",target = "category.id")
-    @Mapping(source = "brand", target = "brand.name")
-    @Mapping(source = "collection", target = "collection.name")
+    @Mapping(source = "brand", target = "brand.id")
+    @Mapping(source = "collection", target = "collection.id")
     @Mapping(source = "materials", target = "jewelryMaterials")
     void updateJewelryFromRequest(JewelryRequest request, @MappingTarget JewelryEntity jewelry);
 
