@@ -271,12 +271,14 @@ public class ValuatingService implements IValuatingServcie {
     }
 
     private ValuatingEntity saveValuatingAndUpdateJewelry(ValuatingEntity valuating){
-        ValuatingEntity valuatingEntity = valuatingRepository.save(valuating);
+        if(!valuating.isOnline()){
+            valuating = valuatingRepository.save(valuating);
+        }
         this.triggerUpdateStatusJewelry(valuating);
-        if(valuating.getStatus() == ValuatingStatus.VALUATED){
+        if(valuating.getStatus() == ValuatingStatus.VALUATED && !valuating.isOnline()){
             this.triggerCreateDeliveryMethod(valuating);
         }
-        return valuatingEntity;
+        return valuating;
     }
 
     private JewelryEntity triggerUpdateStatusJewelry(ValuatingEntity valuating){
