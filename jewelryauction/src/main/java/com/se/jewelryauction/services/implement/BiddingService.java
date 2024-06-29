@@ -33,6 +33,12 @@ public class BiddingService implements IBiddingService {
 
         AuctionEntity auction = auctionRepository.findById(bidRequest.getAuctionId())
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Auction not found with ID: " + bidRequest.getAuctionId()));
+        float currentPrice = auction.getCurrentPrice();
+
+        if (bidRequest.getBidAmount() <= currentPrice) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Bid amount must be greater than current price: " + currentPrice);
+        }
+
 
         AutoBiddingEntity highestAutoBid = autoBiddingRepository.findTop(auction);
 
