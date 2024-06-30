@@ -85,7 +85,7 @@ public class PaymentService implements IPaymentService {
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
         vnp_TxnRef += vnp_CreateDate;
-        payment1 = new Payment(LocalDateTime.now(), LocalDateTime.now(), vnp_TxnRef, wallet, amount, PaymentForType.DEPOSIT, "NCB", PaymentStatus.PENDING);
+        payment1 = new Payment(LocalDateTime.now(), LocalDateTime.now(), vnp_TxnRef, wallet, amount/100f, PaymentForType.DEPOSIT, "NCB", PaymentStatus.PENDING);
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
 
         Instant instant = currentDate.toInstant();
