@@ -18,6 +18,7 @@ public interface ValuatingMapper {
     ValuatingEntity toModel(ValuatingRequest request);
 
     @Mapping(source = "staffId", target = "staff.id")
+    @Mapping(source = "startingPrice", target = "startingPrice")
     ValuatingEntity toModel(UpdateValuatingRequest request);
 
     ValuatingResponse toResponse(ValuatingEntity valuating);

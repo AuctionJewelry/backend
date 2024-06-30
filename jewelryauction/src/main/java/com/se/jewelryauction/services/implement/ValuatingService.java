@@ -131,6 +131,11 @@ public class ValuatingService implements IValuatingServcie {
                             ? valuating.getDesiredPrice()
                             : existingValuating.getDesiredPrice());
 
+            existingValuating.setStartingPrice(
+                    valuating.getStartingPrice() != 0
+                            ? valuating.getStartingPrice()
+                            : existingValuating.getStartingPrice());
+
             existingValuating.setPaymentMethod(
                     valuating.getPaymentMethod() != null
                             ? valuating.getPaymentMethod()

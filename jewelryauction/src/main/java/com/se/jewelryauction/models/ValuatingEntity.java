@@ -39,6 +39,7 @@ public class ValuatingEntity  extends BaseEntiy {
     private boolean isOnline;
 
     private float desiredPrice;
+    private float startingPrice;
     private PaymentMethod paymentMethod;
     private float valuatingFee;
     private ValuatingMethod valuatingMethod;
