@@ -148,7 +148,7 @@ public class PaymentService implements IPaymentService {
         if(existingPayment != null){
             WalletEntity wallet = existingPayment.getWallet();
             if(wallet != null){
-                wallet.setMoney(wallet.getMoney() + existingPayment.getAmount()/100f);
+                wallet.setMoney(wallet.getMoney() + existingPayment.getAmount());
                 walletRepository.save(wallet);
 
                 existingPayment.setStatus(PaymentStatus.SUCCESS);

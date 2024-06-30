@@ -9,9 +9,11 @@ import com.se.jewelryauction.models.enums.JewelryStatus;
 import com.se.jewelryauction.models.enums.ValuatingMethod;
 import com.se.jewelryauction.models.enums.ValuatingStatus;
 import com.se.jewelryauction.repositories.*;
+import com.se.jewelryauction.responses.PaymentResponse;
 import com.se.jewelryauction.responses.ValuatingPerMaterialResponse;
 import com.se.jewelryauction.responses.ValuatingResponse;
 import com.se.jewelryauction.responses.ValuatingStaffResponse;
+import com.se.jewelryauction.services.IPaymentService;
 import com.se.jewelryauction.services.IValuatingServcie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -35,6 +37,7 @@ public class ValuatingService implements IValuatingServcie {
     private final IDeliveryMethodRepository deliveryMethodRepository;
     private final IJewelryMaterialRepository jewelryMaterialRepository;
     private final IValuatingRepository valuatingRepository;
+    private final IPaymentService paymentService;
     private final IMaterialRepository materialRepository;
 
     @Override
@@ -80,6 +83,7 @@ public class ValuatingService implements IValuatingServcie {
         valuating.setStaff(null);
         ValuatingResponse valuatingResponse = ValuatingMapper.INSTANCE.toResponse(this.saveValuatingAndUpdateJewelry(valuating));
         valuatingResponse.setMaterialPriceResponse(perMaterialResponses);
+        valuatingResponse.setPaymentResponse(valuatingResponse.isOnline() ? null : paymentService.createPayment(500000));
         return valuatingResponse;
 
     }

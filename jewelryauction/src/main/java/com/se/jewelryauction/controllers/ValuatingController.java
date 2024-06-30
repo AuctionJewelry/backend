@@ -28,6 +28,7 @@ public class ValuatingController {
     private final IValuatingServcie valuatingService;
 
     @PostMapping("")
+    @PreAuthorize("hasRole('USER')")
     public CoreApiResponse<ValuatingResponse> createValuating(
             @Valid @RequestBody ValuatingRequest valuating
     ) throws IOException, URISyntaxException {
