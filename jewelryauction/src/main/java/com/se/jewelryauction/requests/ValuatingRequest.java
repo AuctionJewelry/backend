@@ -27,4 +27,5 @@ public class ValuatingRequest {
     private PaymentMethod paymentMethod;
     private String notes;
     private ValuatingMethod valuatingMethod;
+    private String address;
 }
