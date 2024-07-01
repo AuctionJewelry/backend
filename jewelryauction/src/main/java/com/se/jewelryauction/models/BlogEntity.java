@@ -3,6 +3,8 @@ package com.se.jewelryauction.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "blogs")
 @Data
@@ -18,9 +20,12 @@ public class BlogEntity extends BaseEntiy {
 
     private String title;
 
-    @Column(nullable = false, length = 10000)
+    @Column(nullable = false, length = 100000)
     private String content;
 
     @ManyToOne
     private UserEntity user;
+
+    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BlogImageEntity> blogImages;
 }
