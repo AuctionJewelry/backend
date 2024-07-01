@@ -22,6 +22,7 @@ public class UpdateValuatingRequest {
     private String notes;
     private ValuatingStatus status;
     private float desiredPrice;
+    private float startingPrice;
     private PaymentMethod paymentMethod;
     private ValuatingMethod valuatingMethod;
 }

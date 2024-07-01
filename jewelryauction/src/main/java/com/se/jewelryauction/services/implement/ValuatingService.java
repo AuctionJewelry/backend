@@ -9,10 +9,14 @@ import com.se.jewelryauction.models.enums.JewelryStatus;
 import com.se.jewelryauction.models.enums.ValuatingMethod;
 import com.se.jewelryauction.models.enums.ValuatingStatus;
 import com.se.jewelryauction.repositories.*;
+import com.se.jewelryauction.responses.PaymentResponse;
 import com.se.jewelryauction.responses.ValuatingPerMaterialResponse;
 import com.se.jewelryauction.responses.ValuatingResponse;
+import com.se.jewelryauction.responses.ValuatingStaffResponse;
+import com.se.jewelryauction.services.IPaymentService;
 import com.se.jewelryauction.services.IValuatingServcie;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,6 +37,7 @@ public class ValuatingService implements IValuatingServcie {
     private final IDeliveryMethodRepository deliveryMethodRepository;
     private final IJewelryMaterialRepository jewelryMaterialRepository;
     private final IValuatingRepository valuatingRepository;
+    private final IPaymentService paymentService;
     private final IMaterialRepository materialRepository;
 
     @Override
@@ -44,12 +49,6 @@ public class ValuatingService implements IValuatingServcie {
         List<ValuatingPerMaterialResponse> perMaterialResponses = new ArrayList<>();
         if(valuating.isOnline()){
             float totalPrice = 0;
-            List<ValuatingEntity> existingValuating = valuatingRepository.findByJewelryId(valuating.getJewelry().getId());
-            for(var valuate: existingValuating){
-                if(valuate.isOnline()){
-                    valuating = valuate;
-                }
-            }
             List<JewelryMaterialEntity> jewelryMaterialEntities = jewelryMaterialRepository.findByJewelryId(jewelry.getId());
             for(var jerMat : jewelryMaterialEntities ){
                 ValuatingPerMaterialResponse materialResponse =
@@ -63,14 +62,28 @@ public class ValuatingService implements IValuatingServcie {
             valuating.setValuatingFee(0);
         }
         else{
+            List<ValuatingEntity> existingValuating = valuatingRepository.findByJewelryId(valuating.getJewelry().getId());
+            boolean isAvailableCreate = true;
+            for(var valuate: existingValuating){
+                if(!(valuate.getStatus().equals(ValuatingStatus.VALUATED) ||
+                                valuate.getStatus().equals(ValuatingStatus.REJECTED))){
+                    isAvailableCreate = false;
+                    break;
+                }
+            }
+            if(!isAvailableCreate){
+                throw new AppException(HttpStatus.BAD_REQUEST, "Jewelry in the offline valuating!");
+            }
             //Sending email to confirm about request check jewelry
             valuating.setJewelry(jewelry);
             valuating.setValuatingFee(500000);
             valuating.setStatus(ValuatingStatus.REQUEST);
+            valuating.setNotes("Revaluating");
         }
         valuating.setStaff(null);
         ValuatingResponse valuatingResponse = ValuatingMapper.INSTANCE.toResponse(this.saveValuatingAndUpdateJewelry(valuating));
         valuatingResponse.setMaterialPriceResponse(perMaterialResponses);
+        valuatingResponse.setPaymentResponse(valuatingResponse.isOnline() ? null : paymentService.createPayment(500000));
         return valuatingResponse;
 
     }
@@ -98,7 +111,14 @@ public class ValuatingService implements IValuatingServcie {
                     user = userRepository.findById(valuating.getStaff().getId())
                             .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "User doesn't exist"));
                     if(user.getRole_id().getId() == 3){
-                        existingValuating.setStaff(user);
+                        List<ValuatingEntity> valuatingEntities = valuatingRepository.findByStatusAndStaffId(ValuatingStatus.PREPARING, user.getId());
+                        if(valuatingEntities.size() < 5){
+                            existingValuating.setStaff(user);
+                            existingValuating.setStatus(ValuatingStatus.PREPARING);
+                        }
+                        else{
+                            throw new AppException(HttpStatus.BAD_REQUEST, "User is busy!");
+                        }
                     }
                     else{
                         throw new AppException(HttpStatus.BAD_REQUEST, "User is not a staff!");
@@ -131,6 +151,11 @@ public class ValuatingService implements IValuatingServcie {
                             ? valuating.getDesiredPrice()
                             : existingValuating.getDesiredPrice());
 
+            existingValuating.setStartingPrice(
+                    valuating.getStartingPrice() != 0
+                            ? valuating.getStartingPrice()
+                            : existingValuating.getStartingPrice());
+
             existingValuating.setPaymentMethod(
                     valuating.getPaymentMethod() != null
                             ? valuating.getPaymentMethod()
@@ -151,6 +176,7 @@ public class ValuatingService implements IValuatingServcie {
         valuatingEntity.setStatus(valuatingStatus);
         return this.updateValuating(valuatingId, valuatingEntity);
     }
+
 
     @Override
     public void deleteValuating(long id) {
@@ -270,36 +296,54 @@ public class ValuatingService implements IValuatingServcie {
         return 0;
     }
 
+    @Override
+    public List<ValuatingStaffResponse> getValuatingStaff() {
+        List<UserEntity> userList = userRepository.findByRoleId_Id(3L);
+        List<ValuatingStaffResponse> valuatingStaffResponses = new ArrayList<>();
+        for(var user : userList){
+            List<ValuatingEntity> valuatingPreparingEntities = valuatingRepository.findByStatusAndStaffId(ValuatingStatus.PREPARING, user.getId());
+            if(valuatingPreparingEntities.size() < 5){
+                valuatingStaffResponses
+                        .add(new ValuatingStaffResponse (user, valuatingPreparingEntities.size()));
+            }
+        }
+        return valuatingStaffResponses;
+    }
+
     private ValuatingEntity saveValuatingAndUpdateJewelry(ValuatingEntity valuating){
-        ValuatingEntity valuatingEntity = valuatingRepository.save(valuating);
+        if(!valuating.isOnline()){
+            valuating = valuatingRepository.save(valuating);
+        }
         this.triggerUpdateStatusJewelry(valuating);
-        if(valuating.getStatus() == ValuatingStatus.VALUATED){
+        if(valuating.getStatus() == ValuatingStatus.VALUATED && !valuating.isOnline()){
             this.triggerCreateDeliveryMethod(valuating);
         }
-        return valuatingEntity;
+        return valuating;
     }
 
     private JewelryEntity triggerUpdateStatusJewelry(ValuatingEntity valuating){
         JewelryEntity jewelry = jewelryRepository.findById(valuating.getJewelry().getId())
                 .orElseThrow(()
                         -> new AppException(HttpStatus.BAD_REQUEST, "There is no Jewelry!"));
-        if(valuating.isOnline()){
-            if(valuating.getStatus() == ValuatingStatus.VALUATED){
-                jewelry.setStatus(JewelryStatus.ONLINE_VALUATED);
-            }
+//        if(valuating.isOnline()){
+//            if(valuating.getStatus() == ValuatingStatus.VALUATED){
+//                if(valuatingRepository.findByJewelryId(jewelry.getId()) == null){
+//                    jewelry.setStatus(JewelryStatus.ONLINE_VALUATED);
+//                }
+//            }
+//        }
+//        else{
+        if(valuating.getStatus() == ValuatingStatus.REQUEST){
+            jewelry.setStatus(JewelryStatus.OFFLINE_VALUATING);
         }
-        else{
-            if(valuating.getStatus() == ValuatingStatus.REQUEST){
-                jewelry.setStatus(JewelryStatus.OFFLINE_VALUATING);
-            }
-            else if (valuating.getStatus() == ValuatingStatus.VALUATED){
-                if(valuating.getValuatingMethod() == ValuatingMethod.AT_HOME_VALUATION)
-                    jewelry.setStatus(JewelryStatus.VALUATING_DELIVERING);
-                if(valuating.getValuatingMethod() == ValuatingMethod.DIRECTLY_VALUATION)
-                    jewelry.setStatus(JewelryStatus.STORED);
-                jewelry.setStaringPrice(valuating.getValuation_value());
-            }
+        else if (valuating.getStatus() == ValuatingStatus.VALUATED){
+            if(valuating.getValuatingMethod() == ValuatingMethod.AT_HOME_VALUATION)
+                jewelry.setStatus(JewelryStatus.VALUATING_DELIVERING);
+            if(valuating.getValuatingMethod() == ValuatingMethod.DIRECTLY_VALUATION)
+                jewelry.setStatus(JewelryStatus.STORED);
+            jewelry.setStaringPrice(valuating.getValuation_value());
         }
+//        }
         return jewelryRepository.save(jewelry);
     }
 

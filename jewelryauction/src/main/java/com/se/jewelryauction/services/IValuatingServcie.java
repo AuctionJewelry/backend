@@ -4,6 +4,7 @@ package com.se.jewelryauction.services;
 import com.se.jewelryauction.models.ValuatingEntity;
 import com.se.jewelryauction.models.enums.ValuatingStatus;
 import com.se.jewelryauction.responses.ValuatingResponse;
+import com.se.jewelryauction.responses.ValuatingStaffResponse;
 
 
 import java.io.IOException;
@@ -21,4 +22,5 @@ public interface IValuatingServcie {
     List<ValuatingEntity> getValuatingByJewelryId(long id);
     List<ValuatingEntity> getValuatingByCurrentUser();
     public float getCurrentPrice(String material) throws IOException, URISyntaxException;
+    public List<ValuatingStaffResponse> getValuatingStaff();
 }

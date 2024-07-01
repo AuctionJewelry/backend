@@ -7,6 +7,7 @@ import com.se.jewelryauction.requests.UpdateValuatingRequest;
 import com.se.jewelryauction.requests.ValuatingRequest;
 import com.se.jewelryauction.requests.ValuatingStatusUpdateRequest;
 import com.se.jewelryauction.responses.ValuatingResponse;
+import com.se.jewelryauction.responses.ValuatingStaffResponse;
 import com.se.jewelryauction.services.IValuatingServcie;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class ValuatingController {
     private final IValuatingServcie valuatingService;
 
     @PostMapping("")
+    @PreAuthorize("hasRole('USER')")
     public CoreApiResponse<ValuatingResponse> createValuating(
             @Valid @RequestBody ValuatingRequest valuating
     ) throws IOException, URISyntaxException {
@@ -78,6 +80,12 @@ public class ValuatingController {
     public CoreApiResponse<List<ValuatingEntity>> getValuatingByCurrentUser(){
         List<ValuatingEntity> valuatingEntities = valuatingService.getValuatingByCurrentUser();
         return CoreApiResponse.success(valuatingEntities);
+    }
+
+    @GetMapping("/available_staff")
+    public CoreApiResponse<List<ValuatingStaffResponse>> getValuatingStaff(){
+        List<ValuatingStaffResponse> valuatingStaffResponses = valuatingService.getValuatingStaff();
+        return CoreApiResponse.success(valuatingStaffResponses);
     }
 
 
