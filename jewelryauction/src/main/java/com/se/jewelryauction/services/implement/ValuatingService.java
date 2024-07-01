@@ -325,25 +325,25 @@ public class ValuatingService implements IValuatingServcie {
         JewelryEntity jewelry = jewelryRepository.findById(valuating.getJewelry().getId())
                 .orElseThrow(()
                         -> new AppException(HttpStatus.BAD_REQUEST, "There is no Jewelry!"));
-//        if(valuating.isOnline()){
+        if(valuating.isOnline()){
 //            if(valuating.getStatus() == ValuatingStatus.VALUATED){
 //                if(valuatingRepository.findByJewelryId(jewelry.getId()) == null){
 //                    jewelry.setStatus(JewelryStatus.ONLINE_VALUATED);
 //                }
 //            }
-//        }
-//        else{
-        if(valuating.getStatus() == ValuatingStatus.REQUEST){
-            jewelry.setStatus(JewelryStatus.OFFLINE_VALUATING);
         }
-        else if (valuating.getStatus() == ValuatingStatus.VALUATED){
-            if(valuating.getValuatingMethod() == ValuatingMethod.AT_HOME_VALUATION)
-                jewelry.setStatus(JewelryStatus.VALUATING_DELIVERING);
-            if(valuating.getValuatingMethod() == ValuatingMethod.DIRECTLY_VALUATION)
-                jewelry.setStatus(JewelryStatus.STORED);
-            jewelry.setStaringPrice(valuating.getValuation_value());
+        else{
+            if(valuating.getStatus() == ValuatingStatus.REQUEST){
+                jewelry.setStatus(JewelryStatus.OFFLINE_VALUATING);
+            }
+            else if (valuating.getStatus() == ValuatingStatus.VALUATED){
+                if(valuating.getValuatingMethod() == ValuatingMethod.AT_HOME_VALUATION)
+                    jewelry.setStatus(JewelryStatus.VALUATING_DELIVERING);
+                if(valuating.getValuatingMethod() == ValuatingMethod.DIRECTLY_VALUATION)
+                    jewelry.setStatus(JewelryStatus.STORED);
+                jewelry.setStaringPrice(valuating.getValuation_value());
+            }
         }
-//        }
         return jewelryRepository.save(jewelry);
     }
 
