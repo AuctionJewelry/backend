@@ -68,4 +68,6 @@ public class JewelryEntity extends BaseEntiy {
     @Column(name = "thumbnail", length = 300)
     private String thumbnail;
 
+    private float price;
+
 }

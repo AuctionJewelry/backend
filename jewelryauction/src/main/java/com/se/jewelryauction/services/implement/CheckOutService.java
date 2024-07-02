@@ -2,24 +2,21 @@ package com.se.jewelryauction.services.implement;
 
 import com.se.jewelryauction.components.exceptions.AppException;
 import com.se.jewelryauction.components.securities.UserPrincipal;
-import com.se.jewelryauction.models.AuctionEntity;
-import com.se.jewelryauction.models.DeliveryMethodEntity;
-import com.se.jewelryauction.models.JewelryEntity;
-import com.se.jewelryauction.models.UserEntity;
+import com.se.jewelryauction.models.*;
 import com.se.jewelryauction.models.enums.AuctionStatus;
 import com.se.jewelryauction.models.enums.DeliveryStatus;
 import com.se.jewelryauction.models.enums.JewelryStatus;
-import com.se.jewelryauction.repositories.IAuctionRepository;
-import com.se.jewelryauction.repositories.IDeliveryMethodRepository;
-import com.se.jewelryauction.repositories.IJewelryRepository;
-import com.se.jewelryauction.repositories.IWalletRepository;
+import com.se.jewelryauction.repositories.*;
 import com.se.jewelryauction.requests.CheckOutRequest;
+import com.se.jewelryauction.requests.DeliveringRequest;
 import com.se.jewelryauction.services.ICheckOutService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Service
@@ -31,6 +28,8 @@ public class CheckOutService implements ICheckOutService {
     private final IDeliveryMethodRepository deliveryMethodRepository;
 
     private final IJewelryRepository jewelryRepository;
+
+    private final IUserRepository userRepository;
 
     @Override
     public DeliveryMethodEntity checkOutAuction(CheckOutRequest request) {
@@ -57,15 +56,37 @@ public class CheckOutService implements ICheckOutService {
         deliveryMethod.setStatus(DeliveryStatus.PREPARING);
         deliveryMethod.setValuatingDelivery(true);
         jewelry.setStatus(JewelryStatus.DELIVERING);
+        jewelry.setPrice(auction.getCurrentPrice());
         jewelryRepository.save(jewelry);
+
 
         return deliveryMethodRepository.save(deliveryMethod);
     }
 
-//    public DeliveryMethodEntity deliveringAuction(long id ){
-//        DeliveryMethodEntity deliveryAuction = deliveryMethodRepository.findById(id)
-//                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Can not find the delivery auction"));
-//        deliveryAuction.setStaff();
-//    }
+    @Override
+    public DeliveryMethodEntity deliveringAuction(DeliveringRequest request){
+        DeliveryMethodEntity deliveryAuction = deliveryMethodRepository.findById(request.getDelivering_id())
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Can not find the delivery auction"));
+        UserEntity staff = userRepository.findById(request.getStaff_id())
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Can not find the staff"));
+        deliveryAuction.setStaff(staff);
+        deliveryAuction.setStatus(DeliveryStatus.DELIVERING);
+        return deliveryMethodRepository.save(deliveryAuction);
+    }
+    @Override
+    public DeliveryMethodEntity deliveredAuction(long id ){
+        DeliveryMethodEntity deliveryAuction = deliveryMethodRepository.findById(id)
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Can not find the delivery auction"));
+        deliveryAuction.setReceiving_time(LocalDateTime.now());
+        deliveryAuction.setStatus(DeliveryStatus.DELIVERED);
+        return deliveryMethodRepository.save(deliveryAuction);
+    }
+    @Override
+    public DeliveryMethodEntity comfirmDelivery(long id){
+        DeliveryMethodEntity deliveryAuction = deliveryMethodRepository.findById(id)
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Can not find the delivery auction"));
+        deliveryAuction.setStatus(DeliveryStatus.RECEIVED);
+        return deliveryMethodRepository.save(deliveryAuction);
+    }
 
 }

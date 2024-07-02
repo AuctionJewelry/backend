@@ -4,6 +4,8 @@ import com.se.jewelryauction.models.enums.DeliveryStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "delivery_method")
 @Data
@@ -39,5 +41,7 @@ public class DeliveryMethodEntity extends BaseEntiy {
     private DeliveryStatus status;
 
     private boolean valuatingDelivery;
+
+    private LocalDateTime receiving_time;
 
 }
