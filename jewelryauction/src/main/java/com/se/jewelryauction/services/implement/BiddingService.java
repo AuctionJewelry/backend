@@ -3,9 +3,11 @@ package com.se.jewelryauction.services.implement;
 import com.se.jewelryauction.components.exceptions.AppException;
 import com.se.jewelryauction.components.securities.UserPrincipal;
 import com.se.jewelryauction.models.*;
+import com.se.jewelryauction.models.enums.AuctionStatus;
 import com.se.jewelryauction.repositories.IAuctionRepository;
 import com.se.jewelryauction.repositories.IAutoBiddingRepository;
 import com.se.jewelryauction.repositories.IBiddingRepository;
+import com.se.jewelryauction.repositories.IWalletRepository;
 import com.se.jewelryauction.requests.BidRequest;
 import com.se.jewelryauction.services.IBiddingService;
 import lombok.AllArgsConstructor;
@@ -17,12 +19,14 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 import java.util.List;
+
 @AllArgsConstructor
 @Service
 public class BiddingService implements IBiddingService {
     private final IBiddingRepository biddingRepository;
     private final IAuctionRepository auctionRepository;
     private final IAutoBiddingRepository autoBiddingRepository;
+    private final IWalletRepository walletRepository;
 
 
     @Override
@@ -30,6 +34,10 @@ public class BiddingService implements IBiddingService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         UserEntity user = userPrincipal.getUser();
+
+        if (!checkWallet(user, bidRequest.getBidAmount())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Not enough money in wallet to place bid.");
+        }
 
         AuctionEntity auction = auctionRepository.findById(bidRequest.getAuctionId())
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Auction not found with ID: " + bidRequest.getAuctionId()));
@@ -72,8 +80,6 @@ public class BiddingService implements IBiddingService {
     }
 
 
-
-
     @Override
     public List<BiddingEntity> getBiddingByAuctionId(long id) {
         return biddingRepository.findByAuctionId(id);
@@ -100,5 +106,18 @@ public class BiddingService implements IBiddingService {
         autoBidding.setMaxBid(maxBid);
         autoBidding.setBidTime(LocalDateTime.now());
         autoBiddingRepository.save(autoBidding);
+    }
+
+    private boolean checkWallet(UserEntity user, float bidAmount) {
+        List<AuctionEntity> auctionWin = auctionRepository.findByWinnerAndStatus(user, AuctionStatus.InProgress);
+        float totalCurrentPrice = 0.0f;
+
+        for (AuctionEntity auction : auctionWin) {
+            totalCurrentPrice += auction.getCurrentPrice();
+        }
+        WalletEntity wallet = walletRepository.findByUser(user);
+
+
+        return !(wallet.getMoney() < (totalCurrentPrice + bidAmount));
     }
 }
