@@ -29,6 +29,14 @@ public class AccountController {
         return CoreApiResponse.success("Insert manager successfully");
     }
 
+    @PostMapping("/users/shipper")
+    public CoreApiResponse<?> createAccountShipper(
+            @Valid @RequestBody CreateAccountRequest accountRequest
+    ){
+        UserEntity user = accountService.createAccountShipper(INSTANCE.toModel(accountRequest));
+        return CoreApiResponse.success("Insert manager successfully");
+    }
+
     @PostMapping("/users/staff")
     public CoreApiResponse<?> createAccountStaff(
             @Valid @RequestBody CreateAccountRequest accountRequest
