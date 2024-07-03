@@ -40,6 +40,19 @@ public class AccountService implements IAccountService {
 
         return userRepository.save(user);
     }
+    @Override
+    public UserEntity createAccountShipper(UserEntity user) {
+        user.setEmail_verified(true);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setImageUrl(ImageContants.DEFAULT_AVATAR);
+        user.setIs_active(true);
+
+        RoleEntity role = roleRepository.findById(5L).orElseThrow(() -> new RuntimeException("Role not found"));
+
+        user.setRole_id(role);
+
+        return userRepository.save(user);
+    }
 
     @Override
     public UserEntity createAccountManager(UserEntity user) {
