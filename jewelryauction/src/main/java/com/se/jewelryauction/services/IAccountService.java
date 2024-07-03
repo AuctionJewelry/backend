@@ -10,6 +10,9 @@ import java.util.List;
 
 public interface IAccountService {
     UserEntity createAccountStaff(UserEntity user);
+
+    UserEntity createAccountShipper(UserEntity user);
+
     UserEntity createAccountManager(UserEntity user);
 
     UserEntity getUserById(Long id);
