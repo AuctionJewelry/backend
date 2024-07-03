@@ -38,6 +38,7 @@ public class Payment extends BaseEntiy{
     private String TransactionNo;
 
     private String TransactionStatus;
+    private String FullName;
 
     @Column(name = "payment_for_type")
     @Enumerated(EnumType.STRING)
@@ -55,5 +56,17 @@ public class Payment extends BaseEntiy{
         this.payment = payment;
         this.bankCode = bankCode;
         this.status = status;
+    }
+
+    public Payment(LocalDateTime createdAt, LocalDateTime updatedAt, String id, WalletEntity wallet, float amount, String bankCode, String BankTranNo, String FullName){
+        super(createdAt, updatedAt);
+        this.id = id;
+        this.wallet = wallet;
+        this.amount = amount;
+        this.bankCode = bankCode;
+        this.BankTranNo = BankTranNo;
+        this.FullName = FullName;
+        this.payment = PaymentForType.REFUND;
+        this.status = PaymentStatus.PENDING;
     }
 }

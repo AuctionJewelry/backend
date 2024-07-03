@@ -2,10 +2,13 @@ package com.se.jewelryauction.controllers;
 
 import com.se.jewelryauction.components.apis.CoreApiResponse;
 import com.se.jewelryauction.components.configurations.PaymentConfig;
+import com.se.jewelryauction.mappers.PaymentMapper;
 import com.se.jewelryauction.models.Payment;
 import com.se.jewelryauction.models.ValuatingEntity;
+import com.se.jewelryauction.models.enums.PaymentStatus;
 import com.se.jewelryauction.repositories.IPaymentRepository;
 import com.se.jewelryauction.requests.PaymentAmountRequest;
+import com.se.jewelryauction.requests.PaymentRefundRequest;
 import com.se.jewelryauction.responses.PaymentResponse;
 import com.se.jewelryauction.responses.VNPAYResponse;
 import com.se.jewelryauction.services.IPaymentService;
@@ -84,5 +87,22 @@ public class PaymentController {
             vnp.setRspCode("99");
         }
         return ResponseEntity.ok(vnp);
+    }
+
+    @PostMapping("/refund")
+    public CoreApiResponse<Payment> createPaymentRefund(
+            @Valid @RequestBody PaymentRefundRequest paymentRefundRequest
+    ){
+        Payment payment = paymentService.createPaymentRefund(paymentRefundRequest);
+        return CoreApiResponse.success(payment);
+    }
+
+    @PutMapping("/update-status")
+    public CoreApiResponse<Payment> updatePaymentStatus(
+            @RequestParam String paymentId,
+            @RequestParam PaymentStatus paymentStatus
+    ) {
+        Payment updatedPayment = paymentService.UpdatePaymentStatus(paymentId, paymentStatus);
+        return CoreApiResponse.success(updatedPayment);
     }
 }
