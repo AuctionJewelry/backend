@@ -14,6 +14,4 @@ public class BlogRequest {
 
     private String content;
 
-
-    private List<String> imageUrls;
 }

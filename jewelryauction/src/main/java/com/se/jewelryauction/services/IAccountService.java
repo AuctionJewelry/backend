@@ -24,6 +24,8 @@ public interface IAccountService {
 
     List<UserEntity> getStaff();
 
+    List<UserEntity> getShipper();
+
     List<RoleEntity> getAllRoles();
 
     List<UserEntity> getManager();

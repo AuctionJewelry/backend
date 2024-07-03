@@ -119,6 +119,12 @@ public class AccountService implements IAccountService {
     }
 
     @Override
+    public List<UserEntity> getShipper() {
+        Long fixedRoleId = 5L;
+        return userRepository.findByRoleId_Id(fixedRoleId);
+    }
+
+    @Override
     public List<UserEntity> getManager() {
         Long fixedRoleId = 2L;
         return userRepository.findByRoleId_Id(fixedRoleId);
