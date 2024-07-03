@@ -17,11 +17,11 @@ import java.io.IOException;
 @AllArgsConstructor
 @RestController
 @RequestMapping("${app.api.version.v1}/user")
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize("isAuthenticated() && hasAnyRole('MANAGER','STAFF','ADMIN','USER')")
+
 
 public class PersonalController {
     private final IPersonalService personalService;
-
     @GetMapping("/me")
     public CoreApiResponse<UserMeResponse> getCurrentUser() {
         return CoreApiResponse.success(personalService.getPersonalInformation());

@@ -11,4 +11,6 @@ public interface ICheckOutService {
     DeliveryMethodEntity deliveredAuction(long id );
 
     DeliveryMethodEntity comfirmDelivery(long id);
+
+    void paymentCheckOut(long auctionId);
 }

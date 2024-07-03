@@ -15,5 +15,6 @@ public enum JewelryStatus {
     AUCTION_FAIL,
     REFUNDING,
     REJECT,
-    COMPLETED
+    COMPLETED,
+    PAYMENT;
 }

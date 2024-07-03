@@ -18,7 +18,7 @@ import java.util.List;
 public class BlogController {
     private final IBlogService blogService;
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('MANAGER','STAFF','ADMIN')")
     @PostMapping("")
     public CoreApiResponse<BlogEntity> createBlog(
             @ModelAttribute BlogRequest blogRequest,
@@ -40,6 +40,7 @@ public class BlogController {
         return CoreApiResponse.success(blog) ;
     }
 
+    @PreAuthorize("hasAnyRole('MANAGER','STAFF','ADMIN')")
     @DeleteMapping("/{id}")
     public CoreApiResponse<?> deleteBlog(@PathVariable Long id) {
         blogService.deleteBlog(id);

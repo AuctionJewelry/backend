@@ -6,6 +6,7 @@ import com.se.jewelryauction.requests.CheckOutRequest;
 import com.se.jewelryauction.requests.DeliveringRequest;
 import com.se.jewelryauction.services.ICheckOutService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,6 +38,14 @@ public class CheckOutController {
         DeliveryMethodEntity deliveryMethod = checkOutService.comfirmDelivery(id);
         return CoreApiResponse.success(deliveryMethod, "Delivery confirmed successfully");
     }
+
+    @PreAuthorize("hasAnyRole('MANAGER','STAFF','ADMIN')")
+    @PostMapping("/payment/{id}")
+    public CoreApiResponse<?> paymentCheckOut(@PathVariable long id) {
+        checkOutService.paymentCheckOut(id);
+        return CoreApiResponse.success( "Payment jewelry successfully");
+    }
+
 }
 
 
