@@ -1,6 +1,5 @@
 package com.se.jewelryauction.models;
 
-import com.se.jewelryauction.models.enums.SystemWalletStatus;
 import com.se.jewelryauction.models.enums.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.*;

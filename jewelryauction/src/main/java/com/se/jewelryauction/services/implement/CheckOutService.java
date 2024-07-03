@@ -60,7 +60,7 @@ public class CheckOutService implements ICheckOutService {
 
         SystemWalletEntity systemWallet = new SystemWalletEntity();
         systemWallet.setAccount_balance(systemWallet.getAccount_balance()+(auction.getCurrentPrice()));
-        systemWallet.setStatus(SystemWalletStatus.ADDITION);
+//        systemWallet.setStatus(SystemWalletStatus.ADDITION);
 
 
         if(auction.getStatus()!= AuctionStatus.Completed){
@@ -137,7 +137,7 @@ public class CheckOutService implements ICheckOutService {
 
         SystemWalletEntity systemWallet = new SystemWalletEntity();
         systemWallet.setAccount_balance((float) (recentWallet.getAccount_balance()-((deliveryAuction.getJewelry().getPrice())*0.95)));
-        systemWallet.setStatus(SystemWalletStatus.SUBTRACTION);
+//        systemWallet.setStatus(SystemWalletStatus.SUBTRACTION);
         systemWalletRepository.save(systemWallet);
 
         return deliveryMethodRepository.save(deliveryAuction);
@@ -166,7 +166,7 @@ public class CheckOutService implements ICheckOutService {
 
         SystemWalletEntity systemWallet = new SystemWalletEntity();
         systemWallet.setAccount_balance(systemWallet.getAccount_balance()+(auction.getCurrentPrice()));
-        systemWallet.setStatus(SystemWalletStatus.ADDITION);
+//        systemWallet.setStatus(SystemWalletStatus.ADDITION);
         systemWalletRepository.save(systemWallet);
 
 

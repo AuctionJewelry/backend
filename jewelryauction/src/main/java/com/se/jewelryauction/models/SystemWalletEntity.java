@@ -1,6 +1,4 @@
 package com.se.jewelryauction.models;
-
-import com.se.jewelryauction.models.enums.SystemWalletStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +15,4 @@ public class SystemWalletEntity extends BaseEntiy {
     private Long id;
 
     private float account_balance;
-
-    @Enumerated(EnumType.STRING)
-    private SystemWalletStatus status;
 }
