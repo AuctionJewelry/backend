@@ -19,7 +19,8 @@ public class CheckOutController {
     public CoreApiResponse<DeliveryMethodEntity> checkOutAuction(@RequestBody CheckOutRequest request) {
         DeliveryMethodEntity deliveryMethod;
         deliveryMethod = checkOutService.checkOutAuction(request);
-        return  CoreApiResponse.success(deliveryMethod,"Check out successfully");
+        float money = deliveryMethod.getJewelry().getPrice();
+        return  CoreApiResponse.success(deliveryMethod,"You have successfully paid: " + money);
     }
 
     @PutMapping("/delivering")

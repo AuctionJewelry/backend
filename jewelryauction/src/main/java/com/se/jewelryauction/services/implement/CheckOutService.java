@@ -3,10 +3,7 @@ package com.se.jewelryauction.services.implement;
 import com.se.jewelryauction.components.exceptions.AppException;
 import com.se.jewelryauction.components.securities.UserPrincipal;
 import com.se.jewelryauction.models.*;
-import com.se.jewelryauction.models.enums.AuctionStatus;
-import com.se.jewelryauction.models.enums.DeliveryStatus;
-import com.se.jewelryauction.models.enums.JewelryStatus;
-import com.se.jewelryauction.models.enums.SystemWalletStatus;
+import com.se.jewelryauction.models.enums.*;
 import com.se.jewelryauction.repositories.*;
 import com.se.jewelryauction.requests.CheckOutRequest;
 import com.se.jewelryauction.requests.DeliveringRequest;
@@ -50,6 +47,21 @@ public class CheckOutService implements ICheckOutService {
         if(!user.getId().equals(auction.getWinner().getId())){
             throw new AppException(HttpStatus.BAD_REQUEST, "You do not have access");
         }
+        WalletEntity wallet = walletRepository.findByUser(user);
+        wallet.setMoney(wallet.getMoney()-auction.getCurrentPrice());
+
+        SystemTransactionEntity systemTransaction = new SystemTransactionEntity();
+        systemTransaction.setSender(user);
+        systemTransaction.setReceiver(auction.getJewelry().getSellerId());
+        systemTransaction.setMoney(auction.getCurrentPrice());
+        systemTransaction.setSystemReceive(true);
+        systemTransaction.setStatus(TransactionStatus.SUBTRACTION);
+
+
+        SystemWalletEntity systemWallet = new SystemWalletEntity();
+        systemWallet.setAccount_balance(systemWallet.getAccount_balance()+(auction.getCurrentPrice()));
+        systemWallet.setStatus(SystemWalletStatus.ADDITION);
+
 
         if(auction.getStatus()!= AuctionStatus.Completed){
             throw new AppException(HttpStatus.BAD_REQUEST, "Unable to pay");
@@ -60,10 +72,15 @@ public class CheckOutService implements ICheckOutService {
         deliveryMethod.setPhone_number(request.getPhone_number());
         deliveryMethod.setJewelry(jewelry);
         deliveryMethod.setStatus(DeliveryStatus.PREPARING);
-        deliveryMethod.setValuatingDelivery(true);
+        deliveryMethod.setValuatingDelivery(false);
         jewelry.setStatus(JewelryStatus.DELIVERING);
         jewelry.setPrice(auction.getCurrentPrice());
         jewelryRepository.save(jewelry);
+
+        walletRepository.save(wallet);
+        transactionRepository.save(systemTransaction);
+        systemWalletRepository.save(systemWallet);
+
 
 
         return deliveryMethodRepository.save(deliveryMethod);
@@ -110,8 +127,10 @@ public class CheckOutService implements ICheckOutService {
 
         SystemTransactionEntity systemTransaction = new SystemTransactionEntity();
         systemTransaction.setReceiver(seller_id);
+        systemTransaction.setSender(deliveryAuction.getUser());
         systemTransaction.setMoney((float) ((deliveryAuction.getJewelry().getPrice())*0.95));
         systemTransaction.setSystemSend(true);
+        systemTransaction.setStatus(TransactionStatus.ADDITION);
         transactionRepository.save(systemTransaction);
 
         SystemWalletEntity recentWallet = systemWalletRepository.findLatestSystemWallet();
@@ -134,6 +153,7 @@ public class CheckOutService implements ICheckOutService {
             throw new AppException(HttpStatus.BAD_REQUEST, "You do not have access");
         }
 
+
         WalletEntity wallet = walletRepository.findByUser(user);
         wallet.setMoney(wallet.getMoney()-auction.getCurrentPrice());
         walletRepository.save(wallet);
@@ -148,6 +168,8 @@ public class CheckOutService implements ICheckOutService {
         systemWallet.setAccount_balance(systemWallet.getAccount_balance()+(auction.getCurrentPrice()));
         systemWallet.setStatus(SystemWalletStatus.ADDITION);
         systemWalletRepository.save(systemWallet);
+
+
 
 
     }
