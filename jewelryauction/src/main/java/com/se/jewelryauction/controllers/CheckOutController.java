@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CheckOutController {
     private final ICheckOutService checkOutService;
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("")
     public CoreApiResponse<DeliveryMethodEntity> checkOutAuction(@RequestBody CheckOutRequest request) {
         DeliveryMethodEntity deliveryMethod;
@@ -39,7 +40,7 @@ public class CheckOutController {
         return CoreApiResponse.success(deliveryMethod, "Delivery confirmed successfully");
     }
 
-    @PreAuthorize("hasAnyRole('MANAGER','STAFF','ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/payment/{id}")
     public CoreApiResponse<?> paymentCheckOut(@PathVariable long id) {
         checkOutService.paymentCheckOut(id);
