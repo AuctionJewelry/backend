@@ -12,8 +12,8 @@ import java.util.*;
 
 public class PaymentConfig {
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-//    public static String vnp_ReturnUrl = "http://jewelryauction.techx.id.vn:8081/resultPayment";
-    public static String vnp_ReturnUrl = "http://localhost:8080/api/v1/payment/vnpay/ipn";
+    public static String vnp_ReturnUrl = "http://jewelryauction.techx.id.vn:8081/resultPayment";
+//    public static String vnp_ReturnUrl = "http://localhost:8080/api/v1/payment/vnpay/ipn";
     public static String vnp_TmnCode = "P3A3FTPM";
     public static String secretKey = "Z62GSURDERJBKRD4XLHW1M8D7M7JZ1KT";
     public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
