@@ -67,7 +67,7 @@ public class DeliveryMethodController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasRole('STAFF') || hasRole('USER')")
+    @PreAuthorize("hasRole('STAFF') || hasRole('USER') || hasRole('SHIPPER')")
     public CoreApiResponse<List<DeliveryMethodEntity>> getValuatingByCurrentUser(){
         List<DeliveryMethodEntity> deliveryMethodEntities = deliveryMethodService.getDeliveryMethodByCurrentUser();
         return CoreApiResponse.success(deliveryMethodEntities);
