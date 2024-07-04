@@ -118,7 +118,7 @@ public class DeliveryMethodService implements IDeliveryMethodService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         UserEntity user = userPrincipal.getUser();
-        if(user.getRole_id().getName().equalsIgnoreCase("staff")){
+        if (user.getRole_id().getName().equalsIgnoreCase("staff") || user.getRole_id().getName().equalsIgnoreCase("shipper")) {
             deliveryMethodEntities = deliveryMethodRepository.findByStaffId(user.getId());
         }
         else{
