@@ -10,6 +10,7 @@ import com.se.jewelryauction.repositories.IPaymentRepository;
 import com.se.jewelryauction.repositories.ISystemTransactionRepository;
 import com.se.jewelryauction.repositories.ISystemWalletRepository;
 import com.se.jewelryauction.repositories.IWalletRepository;
+import com.se.jewelryauction.requests.PaymentRefundRequest;
 import com.se.jewelryauction.responses.PaymentResponse;
 import com.se.jewelryauction.services.IPaymentService;
 import lombok.RequiredArgsConstructor;
@@ -249,6 +250,46 @@ public class PaymentService implements IPaymentService {
         PaymentResponse paymentRespone = new PaymentResponse("OK", "Successfully", paymentUrl, payment1);
 //        this.sendRedirect(paymentUrl);
         return paymentRespone;
+    }
+
+    @Override
+    public Payment createPaymentRefund(PaymentRefundRequest payment) {
+        WalletEntity wallet = walletRepository.findByUser(this.getCurrentUser());
+        if(wallet.getMoney() < payment.getAmount()){
+            throw new AppException(HttpStatus.BAD_REQUEST, "Wallet is not enough money to pay!");
+        }
+        List<Payment> payments = paymentRepositorty.findByPaymentAndStatusAndWalletId(PaymentForType.REFUND, PaymentStatus.PENDING, wallet.getId());
+        if(payments.size() != 0){
+            throw new AppException(HttpStatus.BAD_REQUEST, "System handler the other transaction");
+        }
+        String vnp_TxnRef = "W" + new DecimalFormat("#00000").format(wallet.getId());
+        TimeZone vietnamTimeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        sdf.setTimeZone(vietnamTimeZone);
+
+        Date currentDate = new Date();
+        String vnp_CreateDate = sdf.format(currentDate);
+        vnp_TxnRef += vnp_CreateDate;
+        Payment newPayment = new Payment(LocalDateTime.now(), LocalDateTime.now(), vnp_TxnRef, wallet, payment.getAmount(), payment.getBankCode(), payment.getBankTranNo(), payment.getFullName());
+        return paymentRepositorty.save(newPayment);
+    }
+
+    @Override
+    public Payment UpdatePaymentStatus(String id, PaymentStatus paymentStatus){
+        Payment payment = paymentRepositorty.findPaymentById(id);
+        if(payment == null)
+            throw new AppException(HttpStatus.BAD_REQUEST, "Can not find Payment");
+
+        if(payment.getStatus().equals(PaymentStatus.SUCCESS))
+            throw new AppException(HttpStatus.BAD_REQUEST, "Can not send twice!");
+
+        payment.setStatus(paymentStatus);
+        if(paymentStatus.equals(PaymentStatus.SUCCESS)){
+            WalletEntity wallet = payment.getWallet();
+            wallet.setMoney(wallet.getMoney() - payment.getAmount());
+            walletRepository.save(wallet);
+        }
+        return paymentRepositorty.save(payment);
     }
 
 
