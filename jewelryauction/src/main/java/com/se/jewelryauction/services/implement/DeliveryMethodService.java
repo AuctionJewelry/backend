@@ -60,7 +60,7 @@ public class DeliveryMethodService implements IDeliveryMethodService {
             UserEntity user = userRepository.findById(deliveryMethod.getStaff().getId())
                     .orElseThrow(()
                             -> new AppException(HttpStatus.BAD_REQUEST, "User doesn't exist"));
-            if(user.getRole_id().getName().equalsIgnoreCase("Staff")){
+            if(user.getRole_id().getName().equalsIgnoreCase("Staff")|| user.getRole_id().getName().equalsIgnoreCase("shipper")){
                 existingDeliverMethod.setStaff(user);
             }
             else{
