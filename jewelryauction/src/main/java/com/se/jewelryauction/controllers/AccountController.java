@@ -56,6 +56,13 @@ public class AccountController {
         List<UserEntity> users = accountService.getManager();
         return CoreApiResponse.success(users);
     }
+
+    @GetMapping("/shippers")
+    public CoreApiResponse<List<UserEntity>> getShipper() {
+        List<UserEntity> users = accountService.getShipper();
+        return CoreApiResponse.success(users);
+    }
+    
     @GetMapping("/{id}")
     public CoreApiResponse<UserEntity> getUserById(@PathVariable Long id) {
         return CoreApiResponse.success(accountService.getUserById(id));
