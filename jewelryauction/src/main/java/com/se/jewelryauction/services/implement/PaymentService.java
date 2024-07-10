@@ -38,6 +38,11 @@ public class PaymentService implements IPaymentService {
     public final ISystemTransactionRepository systemTransactionRepository;
 
     @Override
+    public List<Payment> getPayments() {
+        return paymentRepositorty.findAll();
+    }
+
+    @Override
     public PaymentResponse createPayment(float total) throws UnsupportedEncodingException {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
