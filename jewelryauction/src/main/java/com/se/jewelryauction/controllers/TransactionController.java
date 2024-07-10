@@ -15,8 +15,13 @@ import java.util.List;
 public class TransactionController {
     private final ITransactionService systemTransactionService;
 
-    @GetMapping("/transactions/user")
+    @GetMapping("/user")
     public List<SystemTransactionEntity> getTransactionsByUserId() {
         return systemTransactionService.getTransactionsByUserId();
     }
+    @GetMapping("")
+    public List<SystemTransactionEntity> getTransactions() {
+        return systemTransactionService.getTransactionsList();
+    }
+
 }

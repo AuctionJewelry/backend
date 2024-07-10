@@ -24,6 +24,10 @@ public class TransactionService implements ITransactionService {
         UserEntity user = userPrincipal.getUser();
         return transactionRepository.findByUserId(user.getId());
     }
+    @Override
+    public List<SystemTransactionEntity> getTransactionsList() {
+        return transactionRepository.findAll();
+    }
 
 
 }

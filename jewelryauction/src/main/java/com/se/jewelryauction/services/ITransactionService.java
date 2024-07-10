@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ITransactionService {
     List<SystemTransactionEntity> getTransactionsByUserId();
+
+    List<SystemTransactionEntity> getTransactionsList();
 }
