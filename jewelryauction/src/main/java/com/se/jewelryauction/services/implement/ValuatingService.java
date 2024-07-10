@@ -81,6 +81,9 @@ public class ValuatingService implements IValuatingServcie {
             valuating.setNotes("Revaluating");
         }
         valuating.setStaff(null);
+        if(valuating.isOnline()){
+            return ValuatingMapper.INSTANCE.toResponse(this.saveValuatingAndUpdateJewelry(valuating));
+        }
         ValuatingResponse valuatingResponse = ValuatingMapper.INSTANCE.toResponse(this.saveValuatingAndUpdateJewelry(valuating));
         valuatingResponse.setMaterialPriceResponse(perMaterialResponses);
         valuatingResponse.setPaymentResponse(valuatingResponse.isOnline() ? null : paymentService.createPaymentForValuating(500000, valuating.getId()));
@@ -256,7 +259,7 @@ public class ValuatingService implements IValuatingServcie {
             }
             else{
                 // Define the API endpoint and query parameters
-                String apiKey = "9R0DRMMIRQMWU8XD0KSY785XD0KSY";
+                String apiKey = "YLCJ9X2IRXSGAO8J8HDZ2218J8HDZ";
                 String currency = "VND";
                 String unit = "g";
                 String urlString = "https://api.metals.dev/v1/latest"
