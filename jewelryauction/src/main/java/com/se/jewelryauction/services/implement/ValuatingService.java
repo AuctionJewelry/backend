@@ -107,6 +107,7 @@ public class ValuatingService implements IValuatingServcie {
     @Override
     public ValuatingEntity updateValuating(long valuatingId, ValuatingEntity valuating) {
         ValuatingEntity existingValuating = this.getValuatingById(valuatingId);
+        JewelryEntity jewelry = existingValuating.getJewelry();
         if(!existingValuating.isOnline()){
             UserEntity user;
             if(valuating.getStaff() != null){
@@ -158,6 +159,7 @@ public class ValuatingService implements IValuatingServcie {
                     valuating.getStartingPrice() != 0
                             ? valuating.getStartingPrice()
                             : existingValuating.getStartingPrice());
+
 
             existingValuating.setPaymentMethod(
                     valuating.getPaymentMethod() != null
@@ -344,7 +346,7 @@ public class ValuatingService implements IValuatingServcie {
                     jewelry.setStatus(JewelryStatus.VALUATING_DELIVERING);
                 if(valuating.getValuatingMethod() == ValuatingMethod.DIRECTLY_VALUATION)
                     jewelry.setStatus(JewelryStatus.STORED);
-                jewelry.setStaringPrice(valuating.getValuation_value());
+                jewelry.setStaringPrice(valuating.getStartingPrice());
             }
         }
         return jewelryRepository.save(jewelry);
