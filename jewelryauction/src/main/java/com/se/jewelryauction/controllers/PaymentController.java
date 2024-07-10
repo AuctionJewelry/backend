@@ -39,6 +39,11 @@ public class PaymentController {
         return CoreApiResponse.success(paymentResponse);
     }
 
+    @GetMapping("")
+    public CoreApiResponse<List<Payment>> getAllPayments(){
+        return CoreApiResponse.success(paymentService.getPayments());
+    }
+
     @GetMapping("/vnpay/ipn")
     public ResponseEntity<VNPAYResponse> handleIPN(
 
