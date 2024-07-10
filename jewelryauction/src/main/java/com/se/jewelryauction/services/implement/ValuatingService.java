@@ -256,7 +256,7 @@ public class ValuatingService implements IValuatingServcie {
             }
             else{
                 // Define the API endpoint and query parameters
-                String apiKey = "YXYB5ZUVOE4Y9FVZORCL477VZORCL";
+                String apiKey = "543B6OLZPGHQ0GHCESDF362HCESDF";
                 String currency = "VND";
                 String unit = "g";
                 String urlString = "https://api.metals.dev/v1/latest"
