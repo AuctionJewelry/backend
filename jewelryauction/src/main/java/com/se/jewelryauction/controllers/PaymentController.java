@@ -110,4 +110,13 @@ public class PaymentController {
         Payment updatedPayment = paymentService.UpdatePaymentStatus(paymentId, paymentStatus);
         return CoreApiResponse.success(updatedPayment);
     }
+
+//    @PostMapping("/revaluating")
+//    public CoreApiResponse<PaymentResponse> createRepayment(
+//            @RequestParam float total,
+//            @RequestParam Long valutingId
+//    ) throws UnsupportedEncodingException {
+//        PaymentResponse paymentResponse = paymentService.createPaymentForValuating(total, valutingId);
+//        return CoreApiResponse.success(paymentResponse);
+//    }
 }

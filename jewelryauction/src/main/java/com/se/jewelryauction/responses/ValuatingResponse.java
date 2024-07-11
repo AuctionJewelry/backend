@@ -30,5 +30,5 @@ public class ValuatingResponse{
     private ValuatingMethod valuatingMethod;
     private String address;
     public List<ValuatingPerMaterialResponse> materialPriceResponse;
-    public PaymentResponse paymentResponse;
+    public String paymentResponse;
 }

@@ -13,7 +13,7 @@ public interface IPaymentService {
 //    public PaymentResponse createPayment(float total, PaymentForType payment, Long id) throws UnsupportedEncodingException;
     public List<Payment> getPayments();
     public PaymentResponse createPayment(float total) throws UnsupportedEncodingException;
-    public PaymentResponse createPaymentForValuating(float total, Long valutingId) throws UnsupportedEncodingException;
+//    public PaymentResponse createPaymentForValuating(float total, Long valutingId) throws UnsupportedEncodingException;
     public Payment createPaymentRefund(PaymentRefundRequest request);
     public Payment UpdatePaymentStatus(String id, PaymentStatus paymentStatus);
     public Payment setData(String id, Map field);

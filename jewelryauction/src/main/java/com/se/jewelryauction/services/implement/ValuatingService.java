@@ -38,8 +38,10 @@ public class ValuatingService implements IValuatingServcie {
     private final IJewelryMaterialRepository jewelryMaterialRepository;
     private final IValuatingRepository valuatingRepository;
     private final IPaymentService paymentService;
-    private final IMaterialRepository materialRepository;
+    private final IWalletRepository walletRepository;
 
+    public final ISystemWalletRepository systemWalletRepository;
+    public final ISystemTransactionRepository systemTransactionRepository;
     @Override
     public ValuatingResponse createValuating(ValuatingEntity valuating) throws IOException, URISyntaxException {
 
@@ -77,7 +79,7 @@ public class ValuatingService implements IValuatingServcie {
             //Sending email to confirm about request check jewelry
             valuating.setJewelry(jewelry);
             valuating.setValuatingFee(500000);
-            valuating.setStatus(ValuatingStatus.NOT_PAID);
+            valuating.setStatus(ValuatingStatus.REQUEST);
 //            valuating.setNotes("Revaluating");
         }
         valuating.setStaff(null);
@@ -86,11 +88,42 @@ public class ValuatingService implements IValuatingServcie {
             valuatingResponse.setMaterialPriceResponse(perMaterialResponses);
             return valuatingResponse;
         }
+        checkWallet();
         valuating = this.saveValuatingAndUpdateJewelry(valuating);
         ValuatingResponse valuatingResponse = ValuatingMapper.INSTANCE.toResponse(valuating);
-        valuatingResponse.setPaymentResponse(valuatingResponse.isOnline() ? null : paymentService.createPaymentForValuating(500000, valuating.getId()));
+        valuatingResponse.setPaymentResponse("Success");
         return valuatingResponse;
+    }
 
+    private void checkWallet(){
+        WalletEntity wallet = walletRepository.findByUser(this.getCurrentUser());
+        if(wallet.getMoney() >= 500000){
+            List<SystemWalletEntity> systemWalletEntities = systemWalletRepository.findAll();
+            SystemWalletEntity systemWallet;
+            if(systemWalletEntities.size() == 0){
+                systemWallet = new SystemWalletEntity();
+                systemWallet.setAccount_balance(0);
+
+                systemWalletRepository.save(systemWallet);
+            }
+            else{
+                systemWallet = systemWalletEntities.get(0);
+            }
+            SystemTransactionEntity systemTransactionEntity = new SystemTransactionEntity();
+            systemTransactionEntity.setSystemReceive(true);
+            systemTransactionEntity.setSender(wallet.getUser());
+            systemTransactionEntity.setMoney(500000);
+
+            systemTransactionRepository.save(systemTransactionEntity);
+
+            wallet.setMoney(wallet.getMoney() - 500000);
+            systemWallet.setAccount_balance(systemWallet.getAccount_balance() + 500000);
+            walletRepository.save(wallet);
+            systemWalletRepository.save(systemWallet);
+        }
+        else{
+            throw new AppException(HttpStatus.BAD_REQUEST, "You don't have enough money!");
+        }
     }
 
     @Override
@@ -371,6 +404,13 @@ public class ValuatingService implements IValuatingServcie {
             }
         }
         return deliveryMethodRepository.save(deliveryMethod);
+    }
+
+    private UserEntity getCurrentUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
+        return user;
     }
 
 }
