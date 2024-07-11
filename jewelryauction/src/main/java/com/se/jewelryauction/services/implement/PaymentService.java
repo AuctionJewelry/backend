@@ -151,124 +151,122 @@ public class PaymentService implements IPaymentService {
         return paymentRespone;
     }
 
-    @Override
-    public PaymentResponse createPaymentForValuating(float total, Long valutingId) throws UnsupportedEncodingException {
-        String vnp_Version = "2.1.0";
-        String vnp_Command = "pay";
-        String vnp_TxnRef = "";
-        Payment payment1 = new Payment();
-        WalletEntity wallet = walletRepository.findByUser(this.getCurrentUser());
-        if(wallet == null){
-            wallet = new WalletEntity();
-            wallet.setUser(this.getCurrentUser());
-            wallet.setMoney(0);
-            wallet = walletRepository.save(wallet);
-        }
-
-        vnp_TxnRef = "V" + new DecimalFormat("#00000").format(valutingId);
-
-        String orderType = "other";
-        String totalString = total + "";
-        int index = totalString.indexOf(".");
-        totalString = totalString.substring(0, index);
-        Long amount = Long.parseLong(totalString) * 100;
-
-//        DecimalFormat df = new DecimalFormat("#000000");
-//        String vnp_TxnRef = df.format(id);
-
-        String vnp_IpAddr = "14.191.95.88";
-        String vnp_TmnCode = PaymentConfig.vnp_TmnCode;
-
-        Map<String, String> vnp_Params = new HashMap<>();
-        vnp_Params.put("vnp_Version", vnp_Version);
-        vnp_Params.put("vnp_Command", vnp_Command);
-        vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(amount));
-        vnp_Params.put("vnp_CurrCode", "VND");
-
-        vnp_Params.put("vnp_OrderInfo", PaymentForType.DEPOSIT.toString());
-        vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", PaymentConfig.vnp_ReturnUrl);
-        vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
-        vnp_Params.put("vnp_BankCode", "NCB");
-        vnp_Params.put("vnp_OrderType", orderType);
-
-        TimeZone vietnamTimeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        sdf.setTimeZone(vietnamTimeZone);
-
-        Date currentDate = new Date();
-        String vnp_CreateDate = sdf.format(currentDate);
-        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-
-        vnp_TxnRef += vnp_CreateDate;
-        payment1 = new Payment(LocalDateTime.now(), LocalDateTime.now(), vnp_TxnRef, wallet, amount/100f, PaymentForType.DEPOSIT, "NCB", PaymentStatus.PENDING);
-        vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-
-        Instant instant = currentDate.toInstant();
-        Instant newInstant = instant.plus(Duration.ofDays(1));
-        Date newDate = Date.from(newInstant);
-        String vnp_ExpireDate = sdf.format(newDate.getTime());
-        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
-
-        List fieldNames = new ArrayList(vnp_Params.keySet());
-        Collections.sort(fieldNames);
-        StringBuilder hashData = new StringBuilder();
-        StringBuilder query = new StringBuilder();
-        Iterator itr = fieldNames.iterator();
-        while (itr.hasNext()) {
-            String fieldName = (String) itr.next();
-            String fieldValue = (String) vnp_Params.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                //Build hash data
-                hashData.append(fieldName);
-                hashData.append('=');
-                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                //Build query
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
-                query.append('=');
-                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                if (itr.hasNext()) {
-                    query.append('&');
-                    hashData.append('&');
-                }
-            }
-        }
-        String queryUrl = query.toString();
-        String vnp_SecureHash = PaymentConfig.hmacSHA512(PaymentConfig.secretKey, hashData.toString());
-        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;//
-        String paymentUrl = PaymentConfig.vnp_PayUrl + "?" + queryUrl;
-
-        //Update Jewelry
-        ValuatingEntity valuating = valuatingRepository.findById(valutingId)
-                .orElseThrow(()
-                        -> new AppException(HttpStatus.BAD_REQUEST, "This valuating does not exist!"));
-        JewelryEntity jewelry = valuating.getJewelry();
-        jewelry.setStatus(JewelryStatus.NOT_PAID);
-        jewelryRepository.save(jewelry);
-
-        Payment currPayment =  paymentRepositorty.findPaymentById(vnp_TxnRef);
-        if(currPayment != null){
-            if(currPayment.getStatus() == PaymentStatus.SUCCESS){
-                return new PaymentResponse("Failed", "This payment is paid before!", "", currPayment);
-            }
-            else{
-                currPayment.setUpdatedAt(LocalDateTime.now());
-                paymentRepositorty.save(currPayment);
-            }
-        }
-        else{
-            paymentRepositorty.save(payment1);
-        }
-
-
-
-
-        PaymentResponse paymentRespone = new PaymentResponse("OK", "Successfully", paymentUrl, payment1);
-//        this.sendRedirect(paymentUrl);
-        return paymentRespone;
-    }
-
+//    @Override
+//    public PaymentResponse createPaymentForValuating(float total, Long valutingId) throws UnsupportedEncodingException {
+//        String vnp_Version = "2.1.0";
+//        String vnp_Command = "pay";
+//        String vnp_TxnRef = "";
+//        Payment payment1 = new Payment();
+//        WalletEntity wallet = walletRepository.findByUser(this.getCurrentUser());
+//        if(wallet == null){
+//            wallet = new WalletEntity();
+//            wallet.setUser(this.getCurrentUser());
+//            wallet.setMoney(0);
+//            wallet = walletRepository.save(wallet);
+//        }
+//
+//        vnp_TxnRef = "V" + new DecimalFormat("#00000").format(valutingId);
+//
+//        String orderType = "other";
+//        String totalString = total + "";
+//        int index = totalString.indexOf(".");
+//        totalString = totalString.substring(0, index);
+//        Long amount = Long.parseLong(totalString) * 100;
+//
+////        DecimalFormat df = new DecimalFormat("#000000");
+////        String vnp_TxnRef = df.format(id);
+//
+//        String vnp_IpAddr = "14.191.95.88";
+//        String vnp_TmnCode = PaymentConfig.vnp_TmnCode;
+//
+//        Map<String, String> vnp_Params = new HashMap<>();
+//        vnp_Params.put("vnp_Version", vnp_Version);
+//        vnp_Params.put("vnp_Command", vnp_Command);
+//        vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+//        vnp_Params.put("vnp_Amount", String.valueOf(amount));
+//        vnp_Params.put("vnp_CurrCode", "VND");
+//
+//        vnp_Params.put("vnp_OrderInfo", PaymentForType.DEPOSIT.toString());
+//        vnp_Params.put("vnp_Locale", "vn");
+//        vnp_Params.put("vnp_ReturnUrl", PaymentConfig.vnp_ReturnUrl);
+//        vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+//        vnp_Params.put("vnp_BankCode", "NCB");
+//        vnp_Params.put("vnp_OrderType", orderType);
+//
+//        TimeZone vietnamTimeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+//        sdf.setTimeZone(vietnamTimeZone);
+//
+//        Date currentDate = new Date();
+//        String vnp_CreateDate = sdf.format(currentDate);
+//        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+//
+//        vnp_TxnRef += vnp_CreateDate;
+//        payment1 = new Payment(LocalDateTime.now(), LocalDateTime.now(), vnp_TxnRef, wallet, amount/100f, PaymentForType.DEPOSIT, "NCB", PaymentStatus.PENDING);
+//        vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+//
+//        Instant instant = currentDate.toInstant();
+//        Instant newInstant = instant.plus(Duration.ofDays(1));
+//        Date newDate = Date.from(newInstant);
+//        String vnp_ExpireDate = sdf.format(newDate.getTime());
+//        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+//
+//        List fieldNames = new ArrayList(vnp_Params.keySet());
+//        Collections.sort(fieldNames);
+//        StringBuilder hashData = new StringBuilder();
+//        StringBuilder query = new StringBuilder();
+//        Iterator itr = fieldNames.iterator();
+//        while (itr.hasNext()) {
+//            String fieldName = (String) itr.next();
+//            String fieldValue = (String) vnp_Params.get(fieldName);
+//            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+//                //Build hash data
+//                hashData.append(fieldName);
+//                hashData.append('=');
+//                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+//                //Build query
+//                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
+//                query.append('=');
+//                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+//                if (itr.hasNext()) {
+//                    query.append('&');
+//                    hashData.append('&');
+//                }
+//            }
+//        }
+//        String queryUrl = query.toString();
+//        String vnp_SecureHash = PaymentConfig.hmacSHA512(PaymentConfig.secretKey, hashData.toString());
+//        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;//
+//        String paymentUrl = PaymentConfig.vnp_PayUrl + "?" + queryUrl;
+//
+//        //Update Jewelry
+//        ValuatingEntity valuating = valuatingRepository.findById(valutingId)
+//                .orElseThrow(()
+//                        -> new AppException(HttpStatus.BAD_REQUEST, "This valuating does not exist!"));
+//        JewelryEntity jewelry = valuating.getJewelry();
+//        jewelry.setStatus(JewelryStatus.NOT_PAID);
+//        jewelryRepository.save(jewelry);
+//
+//        Payment currPayment =  paymentRepositorty.findPaymentById(vnp_TxnRef);
+//        if(currPayment != null){
+//            if(currPayment.getStatus() == PaymentStatus.SUCCESS){
+//                return new PaymentResponse("Failed", "This payment is paid before!", "", currPayment);
+//            }
+//            else{
+//                currPayment.setUpdatedAt(LocalDateTime.now());
+//                paymentRepositorty.save(currPayment);
+//            }
+//        }
+//        else{
+//            paymentRepositorty.save(payment1);
+//        }
+//
+//
+//        PaymentResponse paymentRespone = new PaymentResponse("OK", "Successfully", paymentUrl, payment1);
+////        this.sendRedirect(paymentUrl);
+//        return paymentRespone;
+//    }
+//
     @Override
     public Payment createPaymentRefund(PaymentRefundRequest payment) {
         WalletEntity wallet = walletRepository.findByUser(this.getCurrentUser());
@@ -336,44 +334,44 @@ public class PaymentService implements IPaymentService {
 
                 existingPayment = paymentRepositorty.save(existingPayment);
 
-                if(id.contains("V")){
-                    List<SystemWalletEntity> systemWalletEntities = systemWalletRepository.findAll();
-                    SystemWalletEntity systemWallet;
-                    if(systemWalletEntities.size() == 0){
-                        systemWallet = new SystemWalletEntity();
-                        systemWallet.setAccount_balance(0);
-
-                        systemWalletRepository.save(systemWallet);
-                    }
-                    else{
-                        systemWallet = systemWalletEntities.get(0);
-                    }
-                    SystemTransactionEntity systemTransactionEntity = new SystemTransactionEntity();
-                    systemTransactionEntity.setSystemReceive(true);
-                    systemTransactionEntity.setSender(wallet.getUser());
-                    systemTransactionEntity.setMoney(500000);
-
-                    systemTransactionRepository.save(systemTransactionEntity);
-
-                    wallet.setMoney(wallet.getMoney() - 500000);
-                    systemWallet.setAccount_balance(systemWallet.getAccount_balance() + 500000);
-                    walletRepository.save(wallet);
-                    systemWalletRepository.save(systemWallet);
-
-                    //Set Valuating
-                    String extractedString = id.substring(1, 6);
-                    ValuatingEntity valuatingEntity = valuatingRepository.findById(Long.parseLong(extractedString))
-                            .orElseThrow(()
-                                    -> new AppException(HttpStatus.BAD_REQUEST, "This valuating does not exist!"));
-
-                    valuatingEntity.setStatus(ValuatingStatus.REQUEST);
-                    valuatingRepository.save(valuatingEntity);
-
-                    //Set Jewelry
-                    JewelryEntity jewelry = valuatingEntity.getJewelry();
-                    jewelry.setStatus(JewelryStatus.OFFLINE_VALUATING);
-                    jewelryRepository.save(jewelry);
-                }
+//                if(id.contains("V")){
+//                    List<SystemWalletEntity> systemWalletEntities = systemWalletRepository.findAll();
+//                    SystemWalletEntity systemWallet;
+//                    if(systemWalletEntities.size() == 0){
+//                        systemWallet = new SystemWalletEntity();
+//                        systemWallet.setAccount_balance(0);
+//
+//                        systemWalletRepository.save(systemWallet);
+//                    }
+//                    else{
+//                        systemWallet = systemWalletEntities.get(0);
+//                    }
+//                    SystemTransactionEntity systemTransactionEntity = new SystemTransactionEntity();
+//                    systemTransactionEntity.setSystemReceive(true);
+//                    systemTransactionEntity.setSender(wallet.getUser());
+//                    systemTransactionEntity.setMoney(500000);
+//
+//                    systemTransactionRepository.save(systemTransactionEntity);
+//
+//                    wallet.setMoney(wallet.getMoney() - 500000);
+//                    systemWallet.setAccount_balance(systemWallet.getAccount_balance() + 500000);
+//                    walletRepository.save(wallet);
+//                    systemWalletRepository.save(systemWallet);
+//
+//                    //Set Valuating
+//                    String extractedString = id.substring(1, 6);
+//                    ValuatingEntity valuatingEntity = valuatingRepository.findById(Long.parseLong(extractedString))
+//                            .orElseThrow(()
+//                                    -> new AppException(HttpStatus.BAD_REQUEST, "This valuating does not exist!"));
+//
+//                    valuatingEntity.setStatus(ValuatingStatus.REQUEST);
+//                    valuatingRepository.save(valuatingEntity);
+//
+//                    //Set Jewelry
+//                    JewelryEntity jewelry = valuatingEntity.getJewelry();
+//                    jewelry.setStatus(JewelryStatus.OFFLINE_VALUATING);
+//                    jewelryRepository.save(jewelry);
+//                }
             }
             else{
                 throw new AppException(HttpStatus.BAD_REQUEST, "There are no wallet!");
