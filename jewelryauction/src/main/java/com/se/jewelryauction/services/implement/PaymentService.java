@@ -4,12 +4,11 @@ import com.se.jewelryauction.components.configurations.PaymentConfig;
 import com.se.jewelryauction.components.exceptions.AppException;
 import com.se.jewelryauction.components.securities.UserPrincipal;
 import com.se.jewelryauction.models.*;
+import com.se.jewelryauction.models.enums.JewelryStatus;
 import com.se.jewelryauction.models.enums.PaymentForType;
 import com.se.jewelryauction.models.enums.PaymentStatus;
-import com.se.jewelryauction.repositories.IPaymentRepository;
-import com.se.jewelryauction.repositories.ISystemTransactionRepository;
-import com.se.jewelryauction.repositories.ISystemWalletRepository;
-import com.se.jewelryauction.repositories.IWalletRepository;
+import com.se.jewelryauction.models.enums.ValuatingStatus;
+import com.se.jewelryauction.repositories.*;
 import com.se.jewelryauction.requests.PaymentRefundRequest;
 import com.se.jewelryauction.responses.PaymentResponse;
 import com.se.jewelryauction.services.IPaymentService;
@@ -34,6 +33,8 @@ import java.util.*;
 public class PaymentService implements IPaymentService {
     public final IWalletRepository walletRepository;
     public final IPaymentRepository paymentRepositorty;
+    public final IJewelryRepository jewelryRepository;
+    public final IValuatingRepository valuatingRepository;
     public final ISystemWalletRepository systemWalletRepository;
     public final ISystemTransactionRepository systemTransactionRepository;
 
@@ -163,6 +164,7 @@ public class PaymentService implements IPaymentService {
             wallet.setMoney(0);
             wallet = walletRepository.save(wallet);
         }
+
         vnp_TxnRef = "V" + new DecimalFormat("#00000").format(valutingId);
 
         String orderType = "other";
@@ -237,6 +239,13 @@ public class PaymentService implements IPaymentService {
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;//
         String paymentUrl = PaymentConfig.vnp_PayUrl + "?" + queryUrl;
 
+        //Update Jewelry
+        ValuatingEntity valuating = valuatingRepository.findById(valutingId)
+                .orElseThrow(()
+                        -> new AppException(HttpStatus.BAD_REQUEST, "This valuating does not exist!"));
+        JewelryEntity jewelry = valuating.getJewelry();
+        jewelry.setStatus(JewelryStatus.NOT_PAID);
+        jewelryRepository.save(jewelry);
 
         Payment currPayment =  paymentRepositorty.findPaymentById(vnp_TxnRef);
         if(currPayment != null){
@@ -251,6 +260,9 @@ public class PaymentService implements IPaymentService {
         else{
             paymentRepositorty.save(payment1);
         }
+
+
+
 
         PaymentResponse paymentRespone = new PaymentResponse("OK", "Successfully", paymentUrl, payment1);
 //        this.sendRedirect(paymentUrl);
@@ -347,6 +359,20 @@ public class PaymentService implements IPaymentService {
                     systemWallet.setAccount_balance(systemWallet.getAccount_balance() + 500000);
                     walletRepository.save(wallet);
                     systemWalletRepository.save(systemWallet);
+
+                    //Set Valuating
+                    String extractedString = id.substring(1, 6);
+                    ValuatingEntity valuatingEntity = valuatingRepository.findById(Long.parseLong(extractedString))
+                            .orElseThrow(()
+                                    -> new AppException(HttpStatus.BAD_REQUEST, "This valuating does not exist!"));
+
+                    valuatingEntity.setStatus(ValuatingStatus.REQUEST);
+                    valuatingRepository.save(valuatingEntity);
+
+                    //Set Jewelry
+                    JewelryEntity jewelry = valuatingEntity.getJewelry();
+                    jewelry.setStatus(JewelryStatus.OFFLINE_VALUATING);
+                    jewelryRepository.save(jewelry);
                 }
             }
             else{

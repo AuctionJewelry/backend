@@ -11,6 +11,7 @@ public enum ValuatingStatus {
 //    Rejected, //
 //    Return //Tra lai hang
 //
+    NOT_PAID,
     REQUEST, //Khi 1 nguoi tao request
     PREPARING, //Chuan bi de tham dinh
     VALUATING, //Trong qua trinh tham dinh

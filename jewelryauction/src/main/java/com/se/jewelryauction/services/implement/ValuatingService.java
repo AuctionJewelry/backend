@@ -77,8 +77,8 @@ public class ValuatingService implements IValuatingServcie {
             //Sending email to confirm about request check jewelry
             valuating.setJewelry(jewelry);
             valuating.setValuatingFee(500000);
-            valuating.setStatus(ValuatingStatus.REQUEST);
-            valuating.setNotes("Revaluating");
+            valuating.setStatus(ValuatingStatus.NOT_PAID);
+//            valuating.setNotes("Revaluating");
         }
         valuating.setStaff(null);
         if(valuating.isOnline()){
@@ -86,7 +86,8 @@ public class ValuatingService implements IValuatingServcie {
             valuatingResponse.setMaterialPriceResponse(perMaterialResponses);
             return valuatingResponse;
         }
-        ValuatingResponse valuatingResponse = ValuatingMapper.INSTANCE.toResponse(this.saveValuatingAndUpdateJewelry(valuating));
+        valuating = this.saveValuatingAndUpdateJewelry(valuating);
+        ValuatingResponse valuatingResponse = ValuatingMapper.INSTANCE.toResponse(valuating);
         valuatingResponse.setPaymentResponse(valuatingResponse.isOnline() ? null : paymentService.createPaymentForValuating(500000, valuating.getId()));
         return valuatingResponse;
 
