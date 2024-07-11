@@ -82,10 +82,11 @@ public class ValuatingService implements IValuatingServcie {
         }
         valuating.setStaff(null);
         if(valuating.isOnline()){
-            return ValuatingMapper.INSTANCE.toResponse(this.saveValuatingAndUpdateJewelry(valuating));
+            ValuatingResponse valuatingResponse = ValuatingMapper.INSTANCE.toResponse(this.saveValuatingAndUpdateJewelry(valuating));
+            valuatingResponse.setMaterialPriceResponse(perMaterialResponses);
+            return valuatingResponse;
         }
         ValuatingResponse valuatingResponse = ValuatingMapper.INSTANCE.toResponse(this.saveValuatingAndUpdateJewelry(valuating));
-        valuatingResponse.setMaterialPriceResponse(perMaterialResponses);
         valuatingResponse.setPaymentResponse(valuatingResponse.isOnline() ? null : paymentService.createPaymentForValuating(500000, valuating.getId()));
         return valuatingResponse;
 
