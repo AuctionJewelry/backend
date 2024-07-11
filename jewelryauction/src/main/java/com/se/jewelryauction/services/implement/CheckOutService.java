@@ -35,6 +35,7 @@ public class CheckOutService implements ICheckOutService {
     private final ISystemTransactionRepository transactionRepository;
 
 
+
     @Override
     public DeliveryMethodEntity checkOutAuction(CheckOutRequest request) {
         DeliveryMethodEntity deliveryMethod = new DeliveryMethodEntity();
