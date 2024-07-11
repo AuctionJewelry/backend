@@ -3,6 +3,7 @@ package com.se.jewelryauction.models.enums;
 public enum JewelryStatus {
     PENDING,
     ONLINE_VALUATED,
+    NOT_PAID,
     OFFLINE_VALUATING,
     OFFLINE_VALUATED,
     VALUATING_DELIVERING,
