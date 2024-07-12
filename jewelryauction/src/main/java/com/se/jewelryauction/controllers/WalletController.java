@@ -1,5 +1,7 @@
 package com.se.jewelryauction.controllers;
 
+import com.se.jewelryauction.components.apis.CoreApiResponse;
+import com.se.jewelryauction.models.SystemWalletEntity;
 import com.se.jewelryauction.responses.WalletResponse;
 import com.se.jewelryauction.services.IWalletService;
 import lombok.RequiredArgsConstructor;
@@ -17,5 +19,10 @@ public class WalletController {
     @GetMapping("/details")
     public WalletResponse getWallet() {
         return walletService.getWallet();
+    }
+
+    @GetMapping("/system")
+    public CoreApiResponse<SystemWalletEntity> getWalletSystem() {
+        return CoreApiResponse.success(walletService.getWalletSystem());
     }
 }
