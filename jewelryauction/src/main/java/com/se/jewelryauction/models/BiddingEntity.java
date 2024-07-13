@@ -6,6 +6,7 @@ import lombok.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -30,7 +31,7 @@ public class BiddingEntity extends BaseEntiy {
     @JoinColumn(name = "customer_id")
     private UserEntity customer;
 
-    private float bidAmount;
+    private BigDecimal bidAmount;
 
     private LocalDateTime bidTime;
 
