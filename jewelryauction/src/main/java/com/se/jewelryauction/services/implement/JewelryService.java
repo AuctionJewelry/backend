@@ -6,10 +6,12 @@ import com.se.jewelryauction.components.exceptions.DataNotFoundException;
 import com.se.jewelryauction.components.securities.UserPrincipal;
 import com.se.jewelryauction.mappers.JewelryMapper;
 import com.se.jewelryauction.models.*;
+import com.se.jewelryauction.models.enums.DeliveryStatus;
 import com.se.jewelryauction.models.enums.JewelryStatus;
 import com.se.jewelryauction.repositories.*;
 import com.se.jewelryauction.requests.JewelryMaterialRequest;
 import com.se.jewelryauction.requests.JewelryRequest;
+import com.se.jewelryauction.requests.RefundJewelryRequest;
 import com.se.jewelryauction.services.IJewelryService;
 import com.se.jewelryauction.utils.StringUtils;
 import com.se.jewelryauction.utils.UploadImagesUtils;
@@ -33,6 +35,7 @@ public class JewelryService implements IJewelryService {
     private final IBrandRepository brandRepository;
     private final ICollectionRepository collectionRepository;
     private final IMaterialRepository materialRepository;
+    private final IDeliveryMethodRepository deliveryMethodRepository;
     private final JewelryMapper jewelryMapper;
     @Override
     public JewelryEntity createJewelry(JewelryEntity jewelry, MultipartFile imageFile, List<MultipartFile> images) throws IOException {
@@ -194,4 +197,39 @@ public class JewelryService implements IJewelryService {
         UserEntity user = userPrincipal.getUser();
         return jewelryRepository.findBySellerId(user.getId());
     }
+    @Override
+    public DeliveryMethodEntity refundJewelry(RefundJewelryRequest jewelryRequest){
+        DeliveryMethodEntity deliveryMethod = new DeliveryMethodEntity();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
+        JewelryEntity jewelry= jewelryRepository.findById(jewelryRequest.getJewelryId())
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Cannot find jewelry with id: " + jewelryRequest.getJewelryId()));
+        if (!jewelry.getSellerId().getId().equals(user.getId())) {
+            throw new AppException(HttpStatus.UNAUTHORIZED, "Bạn không có quyền truy cập");
+        }
+        deliveryMethod.setUser(user);
+        deliveryMethod.setAddress(jewelryRequest.getAddress());
+        deliveryMethod.setFull_name(jewelryRequest.getFull_name());
+        deliveryMethod.setPhone_number(jewelryRequest.getPhone_number());
+        deliveryMethod.setJewelry(jewelry);
+        deliveryMethod.setStatus(DeliveryStatus.PREPARING);
+        deliveryMethod.setValuatingDelivery(false);
+        jewelry.setStatus(JewelryStatus.REFUNDING);
+        jewelryRepository.save(jewelry);
+
+        return deliveryMethodRepository.save(deliveryMethod);
+    }
+    @Override
+    public DeliveryMethodEntity comfirmRefund(long id) {
+
+        DeliveryMethodEntity deliveryAuction = deliveryMethodRepository.findById(id)
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Can not find the delivery auction"));
+        if (deliveryAuction.getStatus() == DeliveryStatus.RECEIVED) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "You have confirmed your delivery ");
+        }
+        deliveryAuction.setStatus(DeliveryStatus.RECEIVED);
+        return deliveryMethodRepository.save(deliveryAuction);
+    }
+
 }

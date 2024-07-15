@@ -20,6 +20,10 @@ public interface IBiddingRepository extends JpaRepository<BiddingEntity, Long> {
 
     List<BiddingEntity> findByCustomerId(Long customerId);
 
+    @Query("SELECT DISTINCT b.customer.id FROM BiddingEntity b WHERE b.auction.id = :auctionId")
+    List<Long> findDistinctBiddersByAuctionId(Long auctionId);
+
+
 
 
 }

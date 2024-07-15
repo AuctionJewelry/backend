@@ -1,9 +1,11 @@
 package com.se.jewelryauction.services;
 
 
+import com.se.jewelryauction.models.DeliveryMethodEntity;
 import com.se.jewelryauction.models.JewelryEntity;
 import com.se.jewelryauction.requests.JewelryMaterialRequest;
 import com.se.jewelryauction.requests.JewelryRequest;
+import com.se.jewelryauction.requests.RefundJewelryRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -20,6 +22,7 @@ public interface IJewelryService {
     List<JewelryEntity> getJewelryBySellerId();
 
     JewelryEntity updateJewelryMaterials(long jewelryId, List<JewelryMaterialRequest> materialsUpdateRequests);
+    DeliveryMethodEntity comfirmRefund(long id);
 
-
+    DeliveryMethodEntity refundJewelry(RefundJewelryRequest jewelryRequest);
 }

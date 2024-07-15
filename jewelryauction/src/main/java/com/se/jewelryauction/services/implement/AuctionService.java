@@ -243,5 +243,11 @@ public class AuctionService implements IAuctionService {
         return start.isAfter(now.plusMinutes(2));
     }
 
+    @Override
+    public int countUniqueBidders(Long auctionId) {
+        List<Long> bidderIds = biddingRepository.findDistinctBiddersByAuctionId(auctionId);
+        return bidderIds.size();
+    }
+
 
 }
