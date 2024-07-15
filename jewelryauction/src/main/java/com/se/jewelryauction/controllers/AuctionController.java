@@ -133,4 +133,10 @@ public class AuctionController {
         return CoreApiResponse.success(auctionService.getAuctionsWin());
     }
 
+    @GetMapping("/bidders/count/{auctionId}")
+    public CoreApiResponse<?> getUniqueBidderCount(@PathVariable Long auctionId) {
+        int count = auctionService.countUniqueBidders(auctionId);
+        return CoreApiResponse.success("Total bidders: " + count);
+    }
+
 }

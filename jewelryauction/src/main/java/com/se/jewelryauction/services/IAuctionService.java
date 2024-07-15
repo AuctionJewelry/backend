@@ -36,4 +36,6 @@ public interface IAuctionService {
     List<ListBidForAuction> getBidsByAuctionId(Long auctionId);
 
     List<AuctionEntity> getAuctionsWin();
+
+    int countUniqueBidders(Long auctionId);
 }

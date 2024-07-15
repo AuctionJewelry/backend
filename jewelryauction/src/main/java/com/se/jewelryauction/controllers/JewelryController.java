@@ -1,9 +1,12 @@
 package com.se.jewelryauction.controllers;
 
 import com.se.jewelryauction.components.apis.CoreApiResponse;
+import com.se.jewelryauction.models.DeliveryMethodEntity;
 import com.se.jewelryauction.models.JewelryEntity;
+import com.se.jewelryauction.requests.CheckOutRequest;
 import com.se.jewelryauction.requests.JewelryMaterialRequest;
 import com.se.jewelryauction.requests.JewelryRequest;
+import com.se.jewelryauction.requests.RefundJewelryRequest;
 import com.se.jewelryauction.services.IJewelryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -75,5 +78,19 @@ public class JewelryController {
     public List<JewelryEntity> getJewelryBySellerId() {
         return jewelryService.getJewelryBySellerId();
     }
+
+    @PostMapping("/refund")
+    public CoreApiResponse<DeliveryMethodEntity> createJewelry(@RequestBody RefundJewelryRequest request){
+        DeliveryMethodEntity deliveryMethod;
+        deliveryMethod = jewelryService.refundJewelry(request);
+        return  CoreApiResponse.success(deliveryMethod,"Create refund jewelry request successfully");
+    }
+
+    @PutMapping("/refund/confirm/{id}")
+    public CoreApiResponse<DeliveryMethodEntity> confirmDelivery(@PathVariable long id) {
+        DeliveryMethodEntity deliveryMethod = jewelryService.comfirmRefund(id);
+        return CoreApiResponse.success(deliveryMethod, "Delivery confirmed successfully");
+    }
+
 
 }

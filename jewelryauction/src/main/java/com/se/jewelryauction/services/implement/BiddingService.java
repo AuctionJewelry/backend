@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+import java.util.Comparator;
 import java.util.List;
 
 @AllArgsConstructor
@@ -48,7 +49,10 @@ public class BiddingService implements IBiddingService {
         }
 
 
-        AutoBiddingEntity highestAutoBid = autoBiddingRepository.findTop(auction);
+        AutoBiddingEntity highestAutoBid = autoBiddingRepository.findByAuctionId(auction.getId())
+                .stream()
+                .max(Comparator.comparing(AutoBiddingEntity::getMaxBid))
+                .orElse(null);
 
         float minBidAmount = auction.getCurrentPrice() + auction.getStep();
 
