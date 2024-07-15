@@ -31,7 +31,7 @@ public class BiddingEntity extends BaseEntiy {
     @JoinColumn(name = "customer_id")
     private UserEntity customer;
 
-    private BigDecimal bidAmount;
+    private float bidAmount;
 
     private LocalDateTime bidTime;
 
