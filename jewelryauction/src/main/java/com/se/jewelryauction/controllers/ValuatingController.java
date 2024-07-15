@@ -9,6 +9,7 @@ import com.se.jewelryauction.requests.ValuatingStatusUpdateRequest;
 import com.se.jewelryauction.responses.ValuatingResponse;
 import com.se.jewelryauction.responses.ValuatingStaffResponse;
 import com.se.jewelryauction.services.IValuatingServcie;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,6 +36,15 @@ public class ValuatingController {
         ValuatingResponse birdTypeResponse = valuatingService.createValuating(
                 INSTANCE.toModel(valuating));
         return CoreApiResponse.success(birdTypeResponse,"Insert valuating successfully");
+    }
+
+    @PostMapping("/revaluting")
+    @PreAuthorize("hasRole('STAFF') || hasRole('USER')")
+    public CoreApiResponse<ValuatingResponse> revaluating(
+            @RequestParam Long id
+    ) throws IOException, URISyntaxException {
+        ValuatingResponse valuatingResponse = valuatingService.reValuating(id);
+        return CoreApiResponse.success(valuatingResponse,"Insert valuating successfully");
     }
 
     @GetMapping("")
