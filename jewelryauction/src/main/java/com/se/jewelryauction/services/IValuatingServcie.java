@@ -23,4 +23,5 @@ public interface IValuatingServcie {
     List<ValuatingEntity> getValuatingByCurrentUser();
     public float getCurrentPrice(String material) throws IOException, URISyntaxException;
     public List<ValuatingStaffResponse> getValuatingStaff();
+    public ValuatingResponse reValuating(long id);
 }
