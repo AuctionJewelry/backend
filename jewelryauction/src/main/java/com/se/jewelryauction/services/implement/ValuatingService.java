@@ -222,7 +222,8 @@ public class ValuatingService implements IValuatingServcie {
     public void deleteValuating(long id) {
         ValuatingEntity existingValuating = this.getValuatingById(id);
         if (existingValuating != null){
-            valuatingRepository.delete(existingValuating);
+            this.updateStatusValuating(id, ValuatingStatus.REJECTED);
+            this.refundMoney(id);
         }
     }
 
@@ -350,6 +351,31 @@ public class ValuatingService implements IValuatingServcie {
         return valuatingStaffResponses;
     }
 
+    @Override
+    public ValuatingResponse reValuating(long id) {
+        ValuatingEntity valuating = this.getValuatingById(id);
+        boolean isAvailableCreate = true;
+        if(!(valuating.getStatus().equals(ValuatingStatus.VALUATED) ||
+                valuating.getStatus().equals(ValuatingStatus.REJECTED))){
+            isAvailableCreate = false;
+        }
+        if(!isAvailableCreate){
+            throw new AppException(HttpStatus.BAD_REQUEST, "Jewelry in the offline valuating!");
+        }
+
+        //Sending email to confirm about request check jewelry
+        valuating.setValuatingFee(500000);
+        valuating.setStatus(ValuatingStatus.REQUEST);
+        valuating.setStaff(null);
+
+        //Check wallet
+        checkWallet();
+        valuating = this.updateValuating(id, valuating);
+        ValuatingResponse valuatingResponse = ValuatingMapper.INSTANCE.toResponse(valuating);
+        valuatingResponse.setPaymentResponse("Success");
+        return valuatingResponse;
+    }
+
     private ValuatingEntity saveValuatingAndUpdateJewelry(ValuatingEntity valuating){
         if(!valuating.isOnline()){
             valuating = valuatingRepository.save(valuating);
@@ -411,6 +437,51 @@ public class ValuatingService implements IValuatingServcie {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         UserEntity user = userPrincipal.getUser();
         return user;
+    }
+
+    private boolean refundMoney(long valuatingId){
+        ValuatingEntity valuating = this.getValuatingById(valuatingId);
+
+        List<SystemWalletEntity> systemWalletEntities = systemWalletRepository.findAll();
+        SystemWalletEntity systemWallet;
+        if(systemWalletEntities.size() == 0){
+            systemWallet = new SystemWalletEntity();
+            systemWallet.setAccount_balance(0);
+
+            systemWalletRepository.save(systemWallet);
+        }
+        else{
+            systemWallet = systemWalletEntities.get(0);
+        }
+
+        if(systemWallet.getAccount_balance() >= 500000){
+            WalletEntity wallet = walletRepository.findByUser(valuating.getJewelry().getSellerId());
+            if(wallet == null){
+                WalletEntity walletEntity = new WalletEntity();
+                walletEntity.setUser(valuating.getJewelry().getSellerId());
+                walletEntity.setMoney(0);
+                wallet = walletRepository.save(walletEntity);
+            }
+
+            SystemTransactionEntity systemTransactionEntity = new SystemTransactionEntity();
+            systemTransactionEntity.setSystemSend(true);
+            systemTransactionEntity.setSystemReceive(false);
+            systemTransactionEntity.setReceiver(wallet.getUser());
+            systemTransactionEntity.setMoney(500000);
+
+            systemTransactionRepository.save(systemTransactionEntity);
+
+            wallet.setMoney(wallet.getMoney() + 500000);
+            systemWallet.setAccount_balance(systemWallet.getAccount_balance() - 500000);
+            walletRepository.save(wallet);
+            systemWalletRepository.save(systemWallet);
+        }
+
+        else{
+            throw new AppException(HttpStatus.BAD_REQUEST, "You don't have enough money to refund!");
+        }
+
+        return true;
     }
 
 }

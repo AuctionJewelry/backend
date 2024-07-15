@@ -26,6 +26,7 @@ public class BiddingSchedule {
     private IBiddingRepository biddingRepository;
 
     @Scheduled(fixedRate = 1000) // runs every 1 second
+
     public void checkAndPlaceAutoBids() {
         List<AuctionEntity> auctions = auctionRepository.findAll();
         for (AuctionEntity auction : auctions) {
