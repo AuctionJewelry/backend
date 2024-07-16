@@ -142,11 +142,16 @@ public class AuctionService implements IAuctionService {
         UserEntity user = userPrincipal.getUser();
         AuctionEntity auction = auctionRepository.findById(id)
                 .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This auction is not existed!"));
-        auction.setStatus(AuctionStatus.Cancel);
 
+        if (auction.getStatus() != AuctionStatus.Waiting && auction.getStatus() != AuctionStatus.WaitingConfirm) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Đấu giá không ở trạng thái chờ hoặc chờ xác nhận.");
+        }
         if (auction.getJewelry().getSellerId().getId().equals(user.getId())) {
             throw new AppException(HttpStatus.UNAUTHORIZED, "Bạn không có quyền truy cập");
         }
+        auction.setStatus(AuctionStatus.Cancel);
+
+        auctionRepository.save(auction);
     }
 
     @Override
