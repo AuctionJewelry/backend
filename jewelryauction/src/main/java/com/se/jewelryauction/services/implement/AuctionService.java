@@ -146,7 +146,7 @@ public class AuctionService implements IAuctionService {
         if (auction.getStatus() != AuctionStatus.Waiting && auction.getStatus() != AuctionStatus.WaitingConfirm) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Auctions are not waiting or waiting confirm.");
         }
-        if (auction.getJewelry().getSellerId().getId().equals(user.getId())) {
+        if (!auction.getJewelry().getSellerId().getId().equals(user.getId())) {
             throw new AppException(HttpStatus.UNAUTHORIZED, "You do not have access");
         }
         auction.setStatus(AuctionStatus.Cancel);
@@ -265,7 +265,7 @@ public class AuctionService implements IAuctionService {
         if (auction.getStatus() != AuctionStatus.WaitingConfirm) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Auction is not waiting confirm.");
         }
-        if (auction.getJewelry().getSellerId().getId().equals(user.getId())) {
+        if (!auction.getJewelry().getSellerId().getId().equals(user.getId())) {
             throw new AppException(HttpStatus.UNAUTHORIZED, "You do not have access");
         }
         auction.setStatus(AuctionStatus.Completed);
