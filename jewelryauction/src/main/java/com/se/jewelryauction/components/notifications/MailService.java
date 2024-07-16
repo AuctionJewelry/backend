@@ -3,6 +3,7 @@ package com.se.jewelryauction.components.notifications;
 import com.se.jewelryauction.components.events.MailEvent;
 import com.se.jewelryauction.repositories.IUserRepository;
 import jakarta.mail.*;
+
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
