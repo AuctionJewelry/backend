@@ -117,6 +117,14 @@ public class AuctionController {
         return CoreApiResponse.success("Cancel auction successfully");
     }
 
+    @PutMapping("/confirm/{id}")
+    public CoreApiResponse<?> confirmAuctions(
+            @PathVariable Long id
+    ){
+        auctionService.comfirmAuctionForSeller(id);
+        return CoreApiResponse.success("Confirm auction successfully");
+    }
+
     @GetMapping("/bids/{auctionId}")
     public CoreApiResponse<List<ListBidForAuction>> getBidsByAuctionId(@PathVariable Long auctionId) {
         return CoreApiResponse.success(auctionService.getBidsByAuctionId(auctionId)) ;
