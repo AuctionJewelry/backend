@@ -38,4 +38,6 @@ public interface IAuctionService {
     List<AuctionEntity> getAuctionsWin();
 
     int countUniqueBidders(Long auctionId);
+    void comfirmAuctionForSeller(long id);
+
 }

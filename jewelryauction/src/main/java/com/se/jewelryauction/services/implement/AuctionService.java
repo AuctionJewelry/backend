@@ -144,10 +144,10 @@ public class AuctionService implements IAuctionService {
                 .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This auction is not existed!"));
 
         if (auction.getStatus() != AuctionStatus.Waiting && auction.getStatus() != AuctionStatus.WaitingConfirm) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Đấu giá không ở trạng thái chờ hoặc chờ xác nhận.");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Auctions are not waiting or waiting confirm.");
         }
         if (auction.getJewelry().getSellerId().getId().equals(user.getId())) {
-            throw new AppException(HttpStatus.UNAUTHORIZED, "Bạn không có quyền truy cập");
+            throw new AppException(HttpStatus.UNAUTHORIZED, "You do not have access");
         }
         auction.setStatus(AuctionStatus.Cancel);
 
@@ -252,6 +252,25 @@ public class AuctionService implements IAuctionService {
     public int countUniqueBidders(Long auctionId) {
         List<Long> bidderIds = biddingRepository.findDistinctBiddersByAuctionId(auctionId);
         return bidderIds.size();
+    }
+
+    @Override
+    public void comfirmAuctionForSeller(long id){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
+        AuctionEntity auction = auctionRepository.findById(id)
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This auction is not existed!"));
+
+        if (auction.getStatus() != AuctionStatus.WaitingConfirm) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Auction is not waiting confirm.");
+        }
+        if (auction.getJewelry().getSellerId().getId().equals(user.getId())) {
+            throw new AppException(HttpStatus.UNAUTHORIZED, "You do not have access");
+        }
+        auction.setStatus(AuctionStatus.Completed);
+
+        auctionRepository.save(auction);
     }
 
 
