@@ -16,6 +16,8 @@ import java.util.List;
 
 @Repository
 public interface IAuctionRepository extends JpaRepository<AuctionEntity, Long> {
+
+
     @Query("SELECT a FROM AuctionEntity a WHERE a.jewelry.category.id = :categoryId AND a.status = 'INPROGRESS'")
     List<AuctionEntity> findByCategoryId(@Param("categoryId") Long categoryId);
 
