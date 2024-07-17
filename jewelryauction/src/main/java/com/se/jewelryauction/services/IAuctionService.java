@@ -40,4 +40,6 @@ public interface IAuctionService {
     int countUniqueBidders(Long auctionId);
     void comfirmAuctionForSeller(long id);
 
+    public AuctionEntity reAuction(long id, UpdateTimeAuctionRequest request);
+
 }
