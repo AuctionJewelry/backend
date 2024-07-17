@@ -40,6 +40,8 @@ public class Payment extends BaseEntiy{
     private String TransactionStatus;
     private String FullName;
 
+
+
     @Column(name = "payment_for_type")
     @Enumerated(EnumType.STRING)
     private PaymentForType payment;

@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -119,4 +120,11 @@ public class PaymentController {
 //        PaymentResponse paymentResponse = paymentService.createPaymentForValuating(total, valutingId);
 //        return CoreApiResponse.success(paymentResponse);
 //    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/me")
+    public CoreApiResponse<List<Payment>> getMePayments(){
+        return CoreApiResponse.success(paymentService.paymentMe());
+    }
+
 }

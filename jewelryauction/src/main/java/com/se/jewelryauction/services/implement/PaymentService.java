@@ -401,4 +401,12 @@ public class PaymentService implements IPaymentService {
         UserEntity user = userPrincipal.getUser();
         return user;
     }
+    @Override
+    public List<Payment> paymentMe(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
+        List<Payment> payments = paymentRepositorty.findByUserId(user.getId());
+        return paymentRepositorty.saveAll(payments);
+    }
 }

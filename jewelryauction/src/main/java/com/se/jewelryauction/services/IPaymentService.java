@@ -19,4 +19,6 @@ public interface IPaymentService {
     public Payment setData(String id, Map field);
 
     Payment setCancel(String id);
+
+    List<Payment> paymentMe();
 }
