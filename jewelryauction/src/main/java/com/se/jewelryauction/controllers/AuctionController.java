@@ -147,4 +147,11 @@ public class AuctionController {
         return CoreApiResponse.success("Total bidders: " + count);
     }
 
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/reAuction/{id}")
+    public CoreApiResponse<AuctionEntity> reAuction(@PathVariable Long id, @RequestBody UpdateTimeAuctionRequest request) {
+        AuctionEntity updatedAuction = auctionService.reAuction(id, request);
+        return CoreApiResponse.success(updatedAuction,"Update auction successfully");
+    }
+
 }

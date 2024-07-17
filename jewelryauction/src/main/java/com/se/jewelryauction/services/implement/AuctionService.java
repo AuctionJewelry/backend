@@ -8,10 +8,7 @@ import com.se.jewelryauction.models.enums.AuctionStatus;
 import com.se.jewelryauction.models.enums.JewelryCondition;
 import com.se.jewelryauction.models.enums.JewelryStatus;
 import com.se.jewelryauction.models.enums.Sex;
-import com.se.jewelryauction.repositories.IAuctionRepository;
-import com.se.jewelryauction.repositories.IAutoBiddingRepository;
-import com.se.jewelryauction.repositories.IBiddingRepository;
-import com.se.jewelryauction.repositories.IJewelryRepository;
+import com.se.jewelryauction.repositories.*;
 import com.se.jewelryauction.requests.UpdateTimeAuctionRequest;
 import com.se.jewelryauction.responses.AuctionResponse;
 import com.se.jewelryauction.responses.ListBidForAuction;
@@ -31,6 +28,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,7 +38,7 @@ public class AuctionService implements IAuctionService {
     private final IJewelryRepository jewelryRepository;
     private final IBiddingRepository  biddingRepository;
     private final IAutoBiddingRepository autoBiddingRepository;
-
+    private final IValuatingRepository valuatingRepository;
 
     @Override
     public AuctionEntity createAuction(AuctionEntity auction) {
@@ -271,6 +269,32 @@ public class AuctionService implements IAuctionService {
         auction.setStatus(AuctionStatus.Completed);
 
         auctionRepository.save(auction);
+    }
+
+    @Override
+    public AuctionEntity reAuction(long id, UpdateTimeAuctionRequest request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
+        AuctionEntity auction = auctionRepository.findById(id)
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "This auction is not existed!"));
+        if (!auction.getJewelry().getSellerId().getId().equals(user.getId())) {
+            throw new AppException(HttpStatus.UNAUTHORIZED, "You do not have access");
+        }
+        JewelryEntity jewelry = auction.getJewelry();
+
+        validateAuctionDuration(request.getStartTime(), request.getEndTime());
+
+        if (!isStartTimeValid(request.getStartTime())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Thời gian bắt đầu phải sau thời gian tạo ít nhất 2 phút.");
+        }
+
+        auction.setCurrentPrice(jewelry.getStaringPrice());
+        auction.setStartTime(request.getStartTime());
+        auction.setEndTime(request.getEndTime());
+        auction.setStatus(AuctionStatus.Waiting);
+
+        return auctionRepository.save(auction);
     }
 
 
