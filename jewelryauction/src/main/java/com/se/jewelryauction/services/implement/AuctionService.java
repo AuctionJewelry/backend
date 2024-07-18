@@ -167,6 +167,7 @@ public class AuctionService implements IAuctionService {
             dto.setId(bidding.getId());
             dto.setAuctionId(bidding.getAuction().getId());
             dto.setUserName(bidding.getCustomer().getFull_name());
+            dto.setEmail(bidding.getCustomer().getEmail());
             dto.setBidAmount(bidding.getBidAmount());
             dto.setBidTime(bidding.getBidTime());
             dto.setStatus("BIDDING");
@@ -179,6 +180,7 @@ public class AuctionService implements IAuctionService {
                 dto.setId(autoBidding.getId());
                 dto.setAuctionId(autoBidding.getAuction().getId());
                 dto.setUserName(autoBidding.getCustomer().getFull_name());
+                dto.setEmail(autoBidding.getCustomer().getEmail());
                 dto.setBidAmount(autoBidding.getMaxBid());
                 dto.setBidTime(autoBidding.getBidTime());
                 dto.setStatus("AUTO_BIDDING");

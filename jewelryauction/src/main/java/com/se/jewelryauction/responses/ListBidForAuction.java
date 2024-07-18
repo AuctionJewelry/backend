@@ -12,6 +12,7 @@ public class ListBidForAuction {
     private Long id;
     private Long auctionId;
     private String userName;
+    private String email;
     private float bidAmount;
     private LocalDateTime bidTime;
     private String status;
