@@ -21,4 +21,6 @@ WORKDIR /app
 # copy over the built artifact from the maven image
 COPY --from=stage1 /app/target/*.jar /app
 
+EXPOSE 8080
+
 ENTRYPOINT ["java", "-jar", "jewelryauction-0.0.1-SNAPSHOT.jar"]
