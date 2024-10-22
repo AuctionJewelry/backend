@@ -27,15 +27,15 @@ public class CategoryController {
     }
 
     @GetMapping("")
-    public CoreApiResponse<List<CategoryEntity>> getAllCategories(){
+    public List<CategoryEntity> getAllCategories(){
         List<CategoryEntity> material = categoryServices.getAllCategories();
-        return CoreApiResponse.success(material);
+        return categoryServices.getAllCategories();
     }
 
     @GetMapping("/{id}")
-    public CoreApiResponse<CategoryEntity> getCategoryById(@Valid @PathVariable Long id){
+    public CategoryEntity getCategoryById(@Valid @PathVariable Long id){
         CategoryEntity material = categoryServices.getCategoryById(id);
-        return CoreApiResponse.success(material);
+        return categoryServices.getCategoryById(id);
     }
 
     @PutMapping("/{id}")

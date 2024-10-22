@@ -26,15 +26,15 @@ public class BrandController {
     }
 
     @GetMapping("")
-    public CoreApiResponse<List<BrandEntity>> getAllMaterials(){
+    public List<BrandEntity> getAllMaterials(){
         List<BrandEntity> material = brandService.getAllBrands();
-        return CoreApiResponse.success(material);
+        return brandService.getAllBrands();
     }
 
     @GetMapping("/{id}")
-    public CoreApiResponse<BrandEntity> getMaterialById(@Valid @PathVariable Long id){
+    public BrandEntity getMaterialById(@Valid @PathVariable Long id){
         BrandEntity brand = brandService.getBrandById(id);
-        return CoreApiResponse.success(brand);
+        return brandService.getBrandById(id);
     }
 
     @PutMapping("/{id}")

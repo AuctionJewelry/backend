@@ -36,25 +36,25 @@ public class CollectionController {
     }
 
     @GetMapping("")
-    public CoreApiResponse<List<CollectionEntity>> getCollections(){
+    public List<CollectionEntity> getCollections(){
         List<CollectionEntity> collections = collectionServices.getAllCollections();
-        return CoreApiResponse.success(collections, "Get all collections successfully!");
+        return collectionServices.getAllCollections();
     }
 
     @GetMapping("/brand/{id}")
-    public CoreApiResponse<List<CollectionEntity>> getCollectionsByBrand(
+    public List<CollectionEntity> getCollectionsByBrand(
             @PathVariable Long id
     ){
         List<CollectionEntity> collections = collectionServices.getCollectionsByBrand(id);
-        return CoreApiResponse.success(collections, "Get all collections successfully!");
+        return collectionServices.getCollectionsByBrand(id);
     }
 
     @GetMapping("/{id}")
-    public CoreApiResponse<CollectionEntity> getCollectionsById(
+    public CollectionEntity getCollectionsById(
             @PathVariable Long id
     ){
         CollectionEntity collections = collectionServices.getCollectionById(id);
-        return CoreApiResponse.success(collections, "Get all collections successfully!");
+        return collectionServices.getCollectionById(id);
     }
 
     @DeleteMapping("/{id}")
