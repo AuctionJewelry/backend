@@ -52,5 +52,25 @@ public class WalletService implements IWalletService {
         return systemWallet;
     }
 
+    @Override
+    public WalletEntity deposit (float amount) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        UserEntity user = userPrincipal.getUser();
+
+        WalletEntity wallet = walletRepository.findByUser(user);
+
+        if (wallet == null) {
+            wallet = WalletEntity.builder()
+                    .user(user)
+                    .money(amount)
+                    .build();
+        } else {
+            wallet.setMoney(wallet.getMoney() + amount);
+        }
+
+        return walletRepository.save(wallet);
+    }
+
 
 }

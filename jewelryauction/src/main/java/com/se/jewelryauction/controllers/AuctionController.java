@@ -37,15 +37,15 @@ public class AuctionController {
     }
 
     @GetMapping("")
-    public CoreApiResponse<List<AuctionEntity>> getAllAuctions(){
+    public List<AuctionEntity> getAllAuctions(){
         List<AuctionEntity> auctions = auctionService.getAllAuctions();
-        return CoreApiResponse.success(auctions);
+        return auctionService.getAllAuctions();
     }
 
     @GetMapping("/{id}")
-    public CoreApiResponse<AuctionEntity> getAuctionById(@Valid @PathVariable Long id){
+    public AuctionEntity getAuctionById(@Valid @PathVariable Long id){
         AuctionEntity auction = auctionService.getAuctionById(id);
-        return CoreApiResponse.success(auction);
+        return auctionService.getAuctionById(id);
     }
 
     @PreAuthorize("hasRole('USER')")
