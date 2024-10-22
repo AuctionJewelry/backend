@@ -25,15 +25,15 @@ public class MaterialController {
     }
 
     @GetMapping("")
-    public CoreApiResponse<List<MaterialEntity>> getAllMaterials(){
+    public List<MaterialEntity> getAllMaterials(){
         List<MaterialEntity> material = materialService.getAllMaterials();
-        return CoreApiResponse.success(material);
+        return materialService.getAllMaterials();
     }
 
     @GetMapping("/{id}")
-    public CoreApiResponse<MaterialEntity> getMaterialById(@Valid @PathVariable Long id){
+    public MaterialEntity getMaterialById(@Valid @PathVariable Long id){
         MaterialEntity material = materialService.getMaterialById(id);
-        return CoreApiResponse.success(material);
+        return materialService.getMaterialById(id);
     }
 
     @PutMapping("/{id}")
