@@ -37,15 +37,15 @@ public class JewelryController {
     }
 
     @GetMapping("")
-    public CoreApiResponse<List<JewelryEntity>> getAllJewelrys(){
+    public List<JewelryEntity> getAllJewelrys(){
         List<JewelryEntity> jewelrys = jewelryService.getAllJewelrys();
-        return CoreApiResponse.success(jewelrys);
+        return jewelryService.getAllJewelrys();
     }
 
     @GetMapping("/{id}")
-    public CoreApiResponse<JewelryEntity> getJewelryById(@Valid @PathVariable Long id){
+    public JewelryEntity getJewelryById(@Valid @PathVariable Long id){
         JewelryEntity jewelry = jewelryService.getJewelryById(id);
-        return CoreApiResponse.success(jewelry);
+        return jewelryService.getJewelryById(id);
     }
 
     @PutMapping("/{id}")
